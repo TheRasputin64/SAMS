@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fucking SAMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,50 +13,105 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            font-family: 'VT323', monospace;
+            background: #0d1117;
             min-height: 100vh;
-            overflow: hidden;
-            color: white;
+            overflow-x: hidden;
+            overflow-y: auto;
+            color: #c9d1d9;
         }
 
         .container {
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            padding: 2vh 2vw;
+            padding: 3vh 4vw;
         }
 
         .header {
             text-align: center;
             padding: 2vh 0;
-            animation: fadeInDown 1s ease-out;
+            animation: slideDown 0.8s ease-out;
         }
 
         .header h1 {
-            font-size: clamp(2rem, 5vw, 4rem);
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-size: clamp(3rem, 7vw, 6rem);
+            font-weight: 400;
+            background: linear-gradient(120deg, #ff6b9d 0%, #c44569 50%, #ff6b9d 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 0.5vh;
-            letter-spacing: 2px;
+            margin-bottom: 1vh;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+        }
+
+        .subtitle-container {
+            height: clamp(1.8rem, 2.5vw, 2.2rem);
+            overflow: hidden;
+            position: relative;
         }
 
         .header .subtitle {
-            font-size: clamp(0.8rem, 1.5vw, 1rem);
-            color: #8b92a8;
-            opacity: 0.7;
-            font-style: italic;
+            font-size: clamp(1rem, 1.8vw, 1.4rem);
+            color: #6b7280;
+            font-weight: 400;
+            letter-spacing: 2px;
+            position: absolute;
+            width: 100%;
+            opacity: 0;
+            animation: textRotate 40s infinite;
+        }
+
+        .header .subtitle:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .header .subtitle:nth-child(2) {
+            animation-delay: 10s;
+        }
+
+        .header .subtitle:nth-child(3) {
+            animation-delay: 20s;
+        }
+
+        .header .subtitle:nth-child(4) {
+            animation-delay: 30s;
+        }
+
+        .tagline-container {
+            height: clamp(1.5rem, 2vw, 1.8rem);
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 3vh;
         }
 
         .tagline {
             text-align: center;
-            font-size: clamp(0.7rem, 1.2vw, 0.9rem);
-            color: #5a6376;
-            margin-bottom: 2vh;
-            opacity: 0.6;
-            animation: fadeIn 2s ease-in;
+            font-size: clamp(0.9rem, 1.4vw, 1.2rem);
+            color: #4b5563;
+            font-weight: 400;
+            letter-spacing: 1px;
+            position: absolute;
+            width: 100%;
+            opacity: 0;
+            animation: textRotate 40s infinite;
+        }
+
+        .tagline:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .tagline:nth-child(2) {
+            animation-delay: 10s;
+        }
+
+        .tagline:nth-child(3) {
+            animation-delay: 20s;
+        }
+
+        .tagline:nth-child(4) {
+            animation-delay: 30s;
         }
 
         .courses-grid {
@@ -63,24 +119,22 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(2, 1fr);
-            gap: clamp(1rem, 2vw, 2rem);
-            padding: 0 clamp(1rem, 3vw, 3rem);
-            animation: fadeInUp 1s ease-out 0.3s backwards;
+            gap: clamp(1.5rem, 3vw, 3rem);
+            animation: slideUp 0.8s ease-out 0.2s backwards;
+            margin-bottom: 2vh;
         }
 
         .course-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
-            border-radius: clamp(15px, 2vw, 25px);
-            padding: clamp(1.5rem, 2.5vw, 2.5rem);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: linear-gradient(135deg, #161b22 0%, #1c2128 100%);
+            padding: clamp(2rem, 3vw, 3rem);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.3s ease;
             cursor: pointer;
             position: relative;
             overflow: hidden;
+            border-left: 4px solid transparent;
         }
 
         .course-card::before {
@@ -90,9 +144,9 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%);
             opacity: 0;
-            transition: opacity 0.4s;
+            transition: opacity 0.3s;
         }
 
         .course-card:hover::before {
@@ -100,20 +154,36 @@
         }
 
         .course-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            border-color: rgba(102, 126, 234, 0.5);
-            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+            transform: translateX(8px);
+            border-left-color: #8b5cf6;
+            background: linear-gradient(135deg, #1c2128 0%, #21262d 100%);
+        }
+
+        .course-card.available {
+            border-left-color: #10b981;
+        }
+
+        .course-card.available:hover {
+            border-left-color: #34d399;
+        }
+
+        .course-card.partial {
+            border-left-color: #f59e0b;
+        }
+
+        .course-card.partial:hover {
+            border-left-color: #fbbf24;
         }
 
         .course-card.disabled {
-            opacity: 0.4;
+            opacity: 0.3;
             cursor: not-allowed;
-            filter: grayscale(1);
+            border-left-color: #374151;
         }
 
         .course-card.disabled:hover {
             transform: none;
-            box-shadow: none;
+            background: linear-gradient(135deg, #161b22 0%, #1c2128 100%);
         }
 
         .course-header {
@@ -122,25 +192,23 @@
         }
 
         .course-title {
-            font-size: clamp(1.2rem, 2vw, 1.8rem);
-            font-weight: bold;
-            margin-bottom: 1vh;
-            background: linear-gradient(135deg, #ffffff 0%, #b8b8b8 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size: clamp(1.6rem, 2.5vw, 2.3rem);
+            font-weight: 400;
+            margin-bottom: 0.8vh;
+            color: #f3f4f6;
+            letter-spacing: 2px;
         }
 
         .course-code {
-            font-size: clamp(0.7rem, 1vw, 0.85rem);
-            color: #667eea;
-            font-family: 'Courier New', monospace;
-            opacity: 0.8;
+            font-size: clamp(0.9rem, 1.3vw, 1.1rem);
+            color: #6b7280;
+            font-weight: 400;
+            letter-spacing: 3px;
         }
 
         .quiz-types {
             display: flex;
-            gap: clamp(0.5rem, 1vw, 0.8rem);
+            gap: clamp(0.8rem, 1.5vw, 1.2rem);
             flex-wrap: wrap;
             position: relative;
             z-index: 1;
@@ -148,63 +216,78 @@
 
         .quiz-btn {
             flex: 1;
-            min-width: clamp(60px, 10vw, 80px);
-            padding: clamp(0.5rem, 1vw, 0.8rem);
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: clamp(8px, 1vw, 12px);
-            color: white;
-            font-weight: 600;
-            font-size: clamp(0.7rem, 1vw, 0.85rem);
+            min-width: clamp(70px, 12vw, 90px);
+            padding: clamp(0.8rem, 1.3vw, 1.1rem);
+            background: transparent;
+            border: 2px solid #374151;
+            color: #9ca3af;
+            font-family: 'VT323', monospace;
+            font-weight: 400;
+            font-size: clamp(0.9rem, 1.3vw, 1.1rem);
             cursor: pointer;
             transition: all 0.3s;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 3px;
         }
 
         .quiz-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5);
+            background: #3b4a5c;
+            border-color: #4a5f7a;
+            color: #e0e7ef;
         }
 
         .quiz-btn.disabled {
-            background: linear-gradient(135deg, #2a2a3e 0%, #1a1a2e 100%);
+            border-color: #1f2937;
+            color: #374151;
             cursor: not-allowed;
-            opacity: 0.3;
+            opacity: 0.4;
         }
 
         .quiz-btn.disabled:hover {
-            transform: none;
-            box-shadow: none;
+            background: transparent;
+            border-color: #1f2937;
+            color: #374151;
         }
 
         .status-badge {
             position: absolute;
-            top: clamp(0.8rem, 1.5vw, 1.2rem);
-            right: clamp(0.8rem, 1.5vw, 1.2rem);
-            padding: clamp(0.3rem, 0.5vw, 0.4rem) clamp(0.6rem, 1vw, 0.8rem);
-            background: rgba(255, 59, 48, 0.2);
-            border: 1px solid rgba(255, 59, 48, 0.5);
-            border-radius: clamp(12px, 1.5vw, 15px);
-            font-size: clamp(0.6rem, 0.9vw, 0.7rem);
-            color: #ff6b6b;
-            font-weight: 600;
+            top: clamp(1rem, 2vw, 1.5rem);
+            right: clamp(1rem, 2vw, 1.5rem);
+            padding: clamp(0.5rem, 0.8vw, 0.6rem) clamp(1rem, 1.5vw, 1.2rem);
+            background: #dc2626;
+            font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+            color: #ffffff;
+            font-weight: 400;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);
+        }
+
+        .status-badge.soon {
+            background: #f59e0b;
+        }
+
+        .status-badge.help {
+            background: #ef4444;
+        }
+
+        .status-badge.never {
+            background: #6b7280;
         }
 
         .footer {
             text-align: center;
-            padding: 1.5vh 0;
-            font-size: clamp(0.7rem, 1vw, 0.85rem);
-            color: #4a5568;
-            opacity: 0.5;
+            padding: 2vh 0;
+            font-size: clamp(0.9rem, 1.3vw, 1.1rem);
+            color: #4b5563;
+            font-weight: 400;
+            letter-spacing: 1px;
         }
 
-        @keyframes fadeInDown {
+        @keyframes slideDown {
             from {
                 opacity: 0;
-                transform: translateY(-30px);
+                transform: translateY(-50px);
             }
             to {
                 opacity: 1;
@@ -212,10 +295,10 @@
             }
         }
 
-        @keyframes fadeInUp {
+        @keyframes slideUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(50px);
             }
             to {
                 opacity: 1;
@@ -223,12 +306,26 @@
             }
         }
 
-        @keyframes fadeIn {
-            from {
+        @keyframes textRotate {
+            0% {
                 opacity: 0;
+                transform: translateY(20px);
             }
-            to {
-                opacity: 0.6;
+            5% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            20% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            25% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-20px);
             }
         }
 
@@ -243,11 +340,11 @@
             .courses-grid {
                 grid-template-columns: 1fr;
                 grid-template-rows: repeat(6, 1fr);
-                gap: 1rem;
+                gap: 1.2rem;
             }
 
             .course-card {
-                min-height: 120px;
+                min-height: 130px;
             }
         }
 
@@ -255,11 +352,11 @@
             .header {
                 padding: 1vh 0;
             }
-            .tagline {
-                margin-bottom: 1vh;
+            .tagline-container {
+                margin-bottom: 1.5vh;
             }
             .courses-grid {
-                gap: 1rem;
+                gap: 1.2rem;
             }
         }
     </style>
@@ -268,40 +365,48 @@
     <div class="container">
         <div class="header">
             <h1>Fucking SAMS</h1>
-            <div class="subtitle">by someone who's barely holding on</div>
+            <div class="subtitle-container">
+                <div class="subtitle">by someone who stopped caring three semesters ago</div>
+                <div class="subtitle">by someone who barely holding on</div>
+                <div class="subtitle">made by procrastinating instead of studying</div>
+                <div class="subtitle">created in denial of impending failure</div>
+            </div>
         </div>
         
-        <div class="tagline">
-            Another semester, another reason to question everything. Welcome back to this meaningless cycle.
+        <div class="tagline-container">
+            <div class="tagline">existence is pain, but at least the quizzes are organized</div>
+            <div class="tagline">we're all gonna fail anyway so why bother pretending</div>
+            <div class="tagline">another semester, another reason to question everything</div>
+            <div class="tagline">built with anxiety and excessive caffeine consumption</div>
         </div>
 
         <div class="courses-grid">
-            <div class="course-card" id="cw-card">
+            <div class="course-card available" id="cw-card">
                 <div class="course-header">
                     <div class="course-title">Cyber Warfare</div>
                     <div class="course-code">CW_2025</div>
                 </div>
                 <div class="quiz-types">
-                    <button class="quiz-btn" onclick="navigate('courses/CW/match.html')">Match</button>
-                    <button class="quiz-btn" onclick="navigate('courses/CW/mcq.html')">MCQ</button>
+                    <button class="quiz-btn" onclick="navigate('Courses/CW/Match/index.html')">Match</button>
+                    <button class="quiz-btn" onclick="navigate('Courses/CW/MCQ/index.html')">MCQ</button>
                     <button class="quiz-btn disabled">T/F</button>
                 </div>
             </div>
 
-            <div class="course-card" id="sp-card">
+            <div class="course-card partial" id="sp-card">
                 <div class="course-header">
                     <div class="course-title">Security Policies</div>
                     <div class="course-code">SP_2025</div>
                 </div>
                 <div class="quiz-types">
-                    <button class="quiz-btn" onclick="navigate('courses/SP/match.html')">Match</button>
+                    <button class="quiz-btn" onclick="navigate('Courses/SP/Match/index.html')">Match</button>
                     <button class="quiz-btn disabled">MCQ</button>
                     <button class="quiz-btn disabled">T/F</button>
                 </div>
             </div>
 
             <div class="course-card disabled">
-                <div class="status-badge">Soon™</div>
+                <div class="status-badge soon">SOON™</div>
                 <div class="course-header">
                     <div class="course-title">Analytic Thinking</div>
                     <div class="course-code">CT_2025</div>
@@ -314,7 +419,7 @@
             </div>
 
             <div class="course-card disabled">
-                <div class="status-badge">God Help Us</div>
+                <div class="status-badge help">GOD HELP US</div>
                 <div class="course-header">
                     <div class="course-title">Software Security</div>
                     <div class="course-code">SAS_2025</div>
@@ -327,7 +432,7 @@
             </div>
 
             <div class="course-card disabled">
-                <div class="status-badge">Not Yet</div>
+                <div class="status-badge">NOT YET</div>
                 <div class="course-header">
                     <div class="course-title">Vision Computing</div>
                     <div class="course-code">VIC_2025</div>
@@ -340,7 +445,7 @@
             </div>
 
             <div class="course-card disabled">
-                <div class="status-badge">Maybe Never</div>
+                <div class="status-badge never">MAYBE NEVER</div>
                 <div class="course-header">
                     <div class="course-title">IoT Technologies</div>
                     <div class="course-code">IOT_2025</div>
@@ -354,7 +459,7 @@
         </div>
 
         <div class="footer">
-            We're all just pretending we know what we're doing anyway
+            sleep is for people who don't have deadlines
         </div>
     </div>
 

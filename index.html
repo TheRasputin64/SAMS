@@ -12,18 +12,11 @@ body{font-family:'VT323',monospace;background:#0d1117;min-height:100vh;overflow-
 .header{text-align:center;padding:1.5rem 0;animation:slideDown 0.8s ease-out;}
 .header h1{font-size:clamp(2.5rem,8vw,5rem);font-weight:400;background:linear-gradient(120deg,#ff6b9d 0%,#c44569 50%,#ff6b9d 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:0.5rem;letter-spacing:4px;text-transform:uppercase;}
 .subtitle-container{height:clamp(1.5rem,3vh,2rem);overflow:hidden;position:relative;margin-bottom:0.5rem;}
-.header .subtitle{font-size:clamp(0.9rem,2vw,1.2rem);color:#6b7280;font-weight:400;letter-spacing:1px;position:absolute;width:100%;opacity:0;animation:textRotate1 50s infinite;}
-.header .subtitle:nth-child(1){animation-delay:0s;}
-.header .subtitle:nth-child(2){animation-delay:10s;}
-.header .subtitle:nth-child(3){animation-delay:25s;}
-.header .subtitle:nth-child(4){animation-delay:35s;}
-.header .subtitle:nth-child(5){animation-delay:45s;}
+.header .subtitle{font-size:clamp(0.9rem,2vw,1.2rem);color:#6b7280;font-weight:400;letter-spacing:1px;position:absolute;width:100%;text-align:center;opacity:0;}
+.header .subtitle.active{animation:textShow 10s linear forwards;}
 .tagline-container{height:clamp(1.3rem,2.5vh,1.6rem);overflow:hidden;position:relative;margin-bottom:2rem;}
-.tagline{text-align:center;font-size:clamp(0.8rem,1.8vw,1rem);color:#4b5563;font-weight:400;letter-spacing:0.5px;position:absolute;width:100%;opacity:0;animation:textRotate2 60s infinite;}
-.tagline:nth-child(1){animation-delay:0s;}
-.tagline:nth-child(2){animation-delay:15s;}
-.tagline:nth-child(3){animation-delay:30s;}
-.tagline:nth-child(4){animation-delay:45s;}
+.tagline{text-align:center;font-size:clamp(0.8rem,1.8vw,1rem);color:#4b5563;font-weight:400;letter-spacing:0.5px;position:absolute;width:100%;opacity:0;}
+.tagline.active{animation:textShow 15s linear forwards;}
 .courses-grid{flex:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:1.5rem;animation:slideUp 0.8s ease-out 0.2s backwards;margin-bottom:1.5rem;max-width:1400px;margin-left:auto;margin-right:auto;width:100%;}
 .course-card{background:linear-gradient(135deg,#161b22 0%,#1c2128 100%);padding:clamp(1.5rem,3vw,2.5rem);display:flex;flex-direction:column;justify-content:space-between;transition:all 0.3s ease;cursor:pointer;position:relative;overflow:hidden;border-left:4px solid transparent;min-height:160px;}
 .course-card::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,rgba(139,92,246,0.05) 0%,rgba(59,130,246,0.05) 100%);opacity:0;transition:opacity 0.3s;}
@@ -50,8 +43,7 @@ body{font-family:'VT323',monospace;background:#0d1117;min-height:100vh;overflow-
 .footer{text-align:center;padding:1.5rem 0;font-size:clamp(0.85rem,1.5vw,1rem);color:#4b5563;font-weight:400;letter-spacing:0.5px;}
 @keyframes slideDown{from{opacity:0;transform:translateY(-50px);}to{opacity:1;transform:translateY(0);}}
 @keyframes slideUp{from{opacity:0;transform:translateY(50px);}to{opacity:1;transform:translateY(0);}}
-@keyframes textRotate1{0%{opacity:0;transform:translateY(20px);}4%{opacity:1;transform:translateY(0);}16%{opacity:1;transform:translateY(0);}20%{opacity:0;transform:translateY(-20px);}100%{opacity:0;transform:translateY(-20px);}}
-@keyframes textRotate2{0%{opacity:0;transform:translateY(20px);}4%{opacity:1;transform:translateY(0);}21%{opacity:1;transform:translateY(0);}25%{opacity:0;transform:translateY(-20px);}100%{opacity:0;transform:translateY(-20px);}}
+@keyframes textShow{0%{opacity:1;transform:translateX(0) scale(1);filter:blur(0);}95%{opacity:1;transform:translateX(0) scale(1);filter:blur(0);}96%{opacity:0.5;transform:translateX(-5px) scale(0.98);filter:blur(3px);}97%{opacity:0.3;transform:translateX(5px) scale(1.02);filter:blur(4px);}98%{opacity:0.2;transform:translateX(-3px) scale(0.99);filter:blur(5px);}99%{opacity:0;transform:translateX(0) scale(1);filter:blur(0);}100%{opacity:0;transform:translateX(0) scale(1);filter:blur(0);}}
 @media(min-width:768px){.courses-grid{grid-template-columns:repeat(2,1fr);}}
 @media(min-width:1200px){.courses-grid{grid-template-columns:repeat(2,1fr);max-width:1200px;}}
 @media(max-width:767px){.container{padding:1.5rem 1rem;}.course-card{min-height:140px;}.courses-grid{gap:1rem;}}
@@ -66,16 +58,18 @@ body{font-family:'VT323',monospace;background:#0d1117;min-height:100vh;overflow-
 <div class="subtitle-container">
 <div class="subtitle">by someone who stopped caring three semesters ago</div>
 <div class="subtitle">by someone who's barely holding on</div>
-<div class="subtitle">made by procrastinating instead of studying</div>
+<div class="subtitle">knows 10 programming languages but works as a farmer</div>
 <div class="subtitle">created in denial of impending failure</div>
-<div class="subtitle">built while questioning every life choice</div>
+<div class="subtitle">experienced but invisible in سوق العمل</div>
+<div class="subtitle">creative and reliable yet overlooked</div>
 </div>
 </div>
 <div class="tagline-container">
-<div class="tagline">existence is pain, but at least the quizzes are organized</div>
+<div class="tagline">existence is pain but at least the quizzes are organized</div>
 <div class="tagline">we're all gonna fail anyway so why bother pretending</div>
-<div class="tagline">another semester, another reason to question everything</div>
-<div class="tagline">built with anxiety and excessive caffeine consumption</div>
+<div class="tagline">plays cyberpunk and kcd between existential crises</div>
+<div class="tagline">exams day after day after day with no time to breathe</div>
+<div class="tagline">university scheduling makes you question local politics</div>
 </div>
 <div class="courses-grid">
 <div class="course-card available">
@@ -149,11 +143,20 @@ body{font-family:'VT323',monospace;background:#0d1117;min-height:100vh;overflow-
 </div>
 </div>
 </div>
-<div class="footer">sleep is for people who don't have deadlines</div>
+<div class="footer">sleep is for people who don't have back-to-back exams</div>
 </div>
 <script>
 function navigate(path){window.location.href=path;}
 document.querySelectorAll('.course-card.disabled').forEach(card=>{card.addEventListener('click',(e)=>{e.preventDefault();e.stopPropagation();});});
+let subtitleIndex=0;
+let taglineIndex=0;
+const subtitles=document.querySelectorAll('.subtitle');
+const taglines=document.querySelectorAll('.tagline');
+function rotateSubtitle(){subtitles.forEach(s=>s.classList.remove('active'));subtitles[subtitleIndex].classList.add('active');subtitleIndex=(subtitleIndex+1)%subtitles.length;}
+function rotateTagline(){taglines.forEach(t=>t.classList.remove('active'));taglines[taglineIndex].classList.add('active');taglineIndex=(taglineIndex+1)%taglines.length;}
+rotateSubtitle();rotateTagline();
+setInterval(rotateSubtitle,10000);
+setInterval(rotateTagline,15000);
 </script>
 </body>
 </html>

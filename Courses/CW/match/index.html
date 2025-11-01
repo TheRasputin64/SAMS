@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cybersecurity Concepts Matching Test</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Cybersecurity Concepts Matching Test</h1>
+            <p>Computer Organization and Infrastructure | Prof. Dr. Nashaat ElKhameesy</p>
+        </div>
+        <div class="instructions">
+            <h2>Instructions:</h2>
+            <p>Click on a term (left column), then click on its matching definition (right column). Green with strikethrough = correct, Red shake = wrong.</p>
+        </div>
+        <div class="content">
+            <div class="score-panel">
+                <h3>Progress</h3>
+                <div class="score-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="matchedCount">0</div>
+                        <div class="stat-label">Matched</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="remainingCount">30</div>
+                        <div class="stat-label">Remaining</div>
+                    </div>
+                </div>
+            </div>
+            <div id="matchingArea">
+                <div class="matching-container">
+                    <div class="terms-column">
+                        <div class="column-header">Terms</div>
+                        <div class="items-list" id="termsList"></div>
+                    </div>
+                    <div class="definitions-column">
+                        <div class="column-header">Definitions</div>
+                        <div class="items-list" id="definitionsList"></div>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-secondary" onclick="resetGame()">Reset All</button>
+                </div>
+            </div>
+            <div class="results" id="results">
+                <h2>Test Complete!</h2>
+                <div class="final-score" id="finalScore">30/30</div>
+                <div class="results-details">
+                    <div class="result-row">
+                        <span>Correct Matches:</span>
+                        <strong id="correctMatches">30</strong>
+                    </div>
+                    <div class="result-row">
+                        <span>Score:</span>
+                        <strong id="percentage">100%</strong>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="resetGame()">Start New Test</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Questions and Answers Data -->
+    <script id="questionsData" type="application/json">
+    [
+        { "term": "Credential stuffing", "definition": "A top recognized 2025 cyberattack method where hackers use stolen login credentials, often obtained from compromised credential attacks data breaches and shared on the dark web, to gain unauthorized access to accounts." },
+        { "term": "Phishing attacks", "definition": "A top recognized 2025 cyberattack which are based on tricking individuals into revealing sensitive information, typically done through fraudulent emails, text messages, or websites that closely mimic legitimate sources, like banks, online services, or trusted organizations.." },
+        { "term": "Cyber warfare", "definition": "Politically motivated hacking for sabotage and espionage which is a type of information warfare that's sometimes compared to conventional warfare." },
+        { "term": "ESPIONAGE:", "definition": "Collecting classified information from individuals, competitors, rivals, groups, governments, and adversaries." },
+        { "term": "SABOTAGE:", "definition": "sometimes called \"direct action\". It means 'to do something'." },
+        { "term": "Blockchain Security:", "definition": "An emerging technology which is a decentralized, encrypted, and immutable ledger technology that enhances cybersecurity by providing a secure and transparent way to record transactions and verify data" },
+        { "term": "Offensive cyber operations", "definition": "actively seek to exploit vulnerabilities to attack an adversary's systems, while their actions are proactive, aiming to disrupt or destroy," },
+        { "term": "defensive cyber operations", "definition": "focus on monitoring, detecting, and responding to threats to protect their own systems whereas they are reactive, seeking to fortify and mitigate damage." },
+        { "term": "Malware and Botnets:", "definition": "Using malware to gain control of systems or employing botnets to launch coordinated attacks or conduct surveillance." },
+        { "term": "Wireshark:", "definition": "A packet analyzer used to troubleshoot network traffic and detect cyberattacks." },
+        { "term": "Metasploit", "definition": "A popular penetration testing framework used by ethical hackers" },
+        { "term": "Nmap:", "definition": "A tool providing network scanning for vulnerabilities." },
+        { "term": "Cybersecurity Kill Chain:", "definition": "A framework to understand how cyberattacks are executed" },
+        { "term": "Disinformation campaigns:", "definition": "A common technique used in informational and physiological attack by spreading false or manipulated information to create internal divisions." },
+        { "term": "Information warfare and psychological operations (PsyOps)", "definition": "Attackers use digital channels to spread misinformation and manipulate public opinion to create chaos and undermine trust" },
+        { "term": "Deepfakes:", "definition": "A common technique used in informational and physiological attack by using AI to create deceptive audio or video content of public figures to erode confidence." },
+        { "term": "Website defacement:", "definition": "A common technique used in informational and physiological attack by altering government or military websites to display false messages" },
+        { "term": "AI and Machine Learning:", "definition": "An emerging technology used in modern cyber warfare by enhancing threat detection and response capabilities through predictive analytics and anomaly detection." },
+        { "term": "Blockchain:", "definition": "An emerging technology used in modern cyber warfare by securing transactions and data integrity, particularly in financial and supply chain operations." },
+        { "term": "Zero Trust Architecture:", "definition": "An emerging technology used in modern cyber warfare based on Trust no one by default, verify all users and devices" },
+        { "term": "Automated Infrastructure:", "definition": "An example of advances in integrated tactics of modern cyberwarfare referred to as Infrastructure-as-Code (IaC) which is based on rapidly deploying and configuring complex attack infrastructure, such as proxy networks and encrypted tunnels, making attribution difficult." },
+        { "term": "Integrated Campaigns", "definition": "An example of advances in integrated tactics of modern cyberwarfare by combining multiple vectors, such as social engineering for initial access, technical exploits to escalate privileges, and sabotage to achieve strategic goals." },
+        { "term": "Lateral Movement and Data Exfiltration:", "definition": "An example of advances in integrated tactics of modern cyberwarfare Once inside a network, attackers use advanced techniques like Kerberos ticket theft and move laterally to reach high-value targets, exfiltrating data over encrypted channels designed to look like normal network traffic." },
+        { "term": "Cyberspace battlespace", "definition": "Includes things like the networks, computers, hardware (this includes weapon systems with embedded computer chips), software (commercial and government developed), applications (like command and control systems), protocols, mobile devices, and the people that run them." },
+        { "term": "Cybercrime", "definition": "Any illegal activity involving computers, networks, or digital devices, including actions that target digital systems or use them as a tool to commit other crimes. It can range from financial gain through phishing and ransomware to other offenses like spreading malware, disrupting operations, and committing identity theft." }
+    ]
+    </script>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,479 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fucking SAMS</title>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'VT323', monospace;
-            background: #0d1117;
-            min-height: 100vh;
-            overflow-x: hidden;
-            overflow-y: auto;
-            color: #c9d1d9;
-        }
-
-        .container {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            padding: 3vh 4vw;
-        }
-
-        .header {
-            text-align: center;
-            padding: 2vh 0;
-            animation: slideDown 0.8s ease-out;
-        }
-
-        .header h1 {
-            font-size: clamp(3rem, 7vw, 6rem);
-            font-weight: 400;
-            background: linear-gradient(120deg, #ff6b9d 0%, #c44569 50%, #ff6b9d 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 1vh;
-            letter-spacing: 6px;
-            text-transform: uppercase;
-        }
-
-        .subtitle-container {
-            height: clamp(1.8rem, 2.5vw, 2.2rem);
-            overflow: hidden;
-            position: relative;
-        }
-
-        .header .subtitle {
-            font-size: clamp(1rem, 1.8vw, 1.4rem);
-            color: #6b7280;
-            font-weight: 400;
-            letter-spacing: 2px;
-            position: absolute;
-            width: 100%;
-            opacity: 0;
-            animation: textRotate 40s infinite;
-        }
-
-        .header .subtitle:nth-child(1) {
-            animation-delay: 0s;
-        }
-
-        .header .subtitle:nth-child(2) {
-            animation-delay: 10s;
-        }
-
-        .header .subtitle:nth-child(3) {
-            animation-delay: 20s;
-        }
-
-        .header .subtitle:nth-child(4) {
-            animation-delay: 30s;
-        }
-
-        .tagline-container {
-            height: clamp(1.5rem, 2vw, 1.8rem);
-            overflow: hidden;
-            position: relative;
-            margin-bottom: 3vh;
-        }
-
-        .tagline {
-            text-align: center;
-            font-size: clamp(0.9rem, 1.4vw, 1.2rem);
-            color: #4b5563;
-            font-weight: 400;
-            letter-spacing: 1px;
-            position: absolute;
-            width: 100%;
-            opacity: 0;
-            animation: textRotate 40s infinite;
-        }
-
-        .tagline:nth-child(1) {
-            animation-delay: 0s;
-        }
-
-        .tagline:nth-child(2) {
-            animation-delay: 10s;
-        }
-
-        .tagline:nth-child(3) {
-            animation-delay: 20s;
-        }
-
-        .tagline:nth-child(4) {
-            animation-delay: 30s;
-        }
-
-        .courses-grid {
-            flex: 1;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(2, 1fr);
-            gap: clamp(1.5rem, 3vw, 3rem);
-            animation: slideUp 0.8s ease-out 0.2s backwards;
-            margin-bottom: 2vh;
-        }
-
-        .course-card {
-            background: linear-gradient(135deg, #161b22 0%, #1c2128 100%);
-            padding: clamp(2rem, 3vw, 3rem);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            border-left: 4px solid transparent;
-        }
-
-        .course-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .course-card:hover::before {
-            opacity: 1;
-        }
-
-        .course-card:hover {
-            transform: translateX(8px);
-            border-left-color: #8b5cf6;
-            background: linear-gradient(135deg, #1c2128 0%, #21262d 100%);
-        }
-
-        .course-card.available {
-            border-left-color: #10b981;
-        }
-
-        .course-card.available:hover {
-            border-left-color: #34d399;
-        }
-
-        .course-card.partial {
-            border-left-color: #f59e0b;
-        }
-
-        .course-card.partial:hover {
-            border-left-color: #fbbf24;
-        }
-
-        .course-card.disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-            border-left-color: #374151;
-        }
-
-        .course-card.disabled:hover {
-            transform: none;
-            background: linear-gradient(135deg, #161b22 0%, #1c2128 100%);
-        }
-
-        .course-header {
-            position: relative;
-            z-index: 1;
-        }
-
-        .course-title {
-            font-size: clamp(1.6rem, 2.5vw, 2.3rem);
-            font-weight: 400;
-            margin-bottom: 0.8vh;
-            color: #f3f4f6;
-            letter-spacing: 2px;
-        }
-
-        .course-code {
-            font-size: clamp(0.9rem, 1.3vw, 1.1rem);
-            color: #6b7280;
-            font-weight: 400;
-            letter-spacing: 3px;
-        }
-
-        .quiz-types {
-            display: flex;
-            gap: clamp(0.8rem, 1.5vw, 1.2rem);
-            flex-wrap: wrap;
-            position: relative;
-            z-index: 1;
-        }
-
-        .quiz-btn {
-            flex: 1;
-            min-width: clamp(70px, 12vw, 90px);
-            padding: clamp(0.8rem, 1.3vw, 1.1rem);
-            background: transparent;
-            border: 2px solid #374151;
-            color: #9ca3af;
-            font-family: 'VT323', monospace;
-            font-weight: 400;
-            font-size: clamp(0.9rem, 1.3vw, 1.1rem);
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-        }
-
-        .quiz-btn:hover {
-            background: #3b4a5c;
-            border-color: #4a5f7a;
-            color: #e0e7ef;
-        }
-
-        .quiz-btn.disabled {
-            border-color: #1f2937;
-            color: #374151;
-            cursor: not-allowed;
-            opacity: 0.4;
-        }
-
-        .quiz-btn.disabled:hover {
-            background: transparent;
-            border-color: #1f2937;
-            color: #374151;
-        }
-
-        .status-badge {
-            position: absolute;
-            top: clamp(1rem, 2vw, 1.5rem);
-            right: clamp(1rem, 2vw, 1.5rem);
-            padding: clamp(0.5rem, 0.8vw, 0.6rem) clamp(1rem, 1.5vw, 1.2rem);
-            background: #dc2626;
-            font-size: clamp(0.8rem, 1.2vw, 0.9rem);
-            color: #ffffff;
-            font-weight: 400;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);
-        }
-
-        .status-badge.soon {
-            background: #f59e0b;
-        }
-
-        .status-badge.help {
-            background: #ef4444;
-        }
-
-        .status-badge.never {
-            background: #6b7280;
-        }
-
-        .footer {
-            text-align: center;
-            padding: 2vh 0;
-            font-size: clamp(0.9rem, 1.3vw, 1.1rem);
-            color: #4b5563;
-            font-weight: 400;
-            letter-spacing: 1px;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes textRotate {
-            0% {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            5% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-            20% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-            25% {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-        }
-
-        @media (max-width: 1024px) {
-            .courses-grid {
-                grid-template-columns: repeat(2, 1fr);
-                grid-template-rows: repeat(3, 1fr);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .courses-grid {
-                grid-template-columns: 1fr;
-                grid-template-rows: repeat(6, 1fr);
-                gap: 1.2rem;
-            }
-
-            .course-card {
-                min-height: 130px;
-            }
-        }
-
-        @media (max-height: 700px) {
-            .header {
-                padding: 1vh 0;
-            }
-            .tagline-container {
-                margin-bottom: 1.5vh;
-            }
-            .courses-grid {
-                gap: 1.2rem;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fucking SAMS</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'VT323',monospace;background:#0d1117;min-height:100vh;overflow-x:hidden;overflow-y:auto;color:#c9d1d9;}
+.container{min-height:100vh;display:flex;flex-direction:column;padding:2rem 2rem;}
+.header{text-align:center;padding:1.5rem 0;animation:slideDown 0.8s ease-out;}
+.header h1{font-size:clamp(2.5rem,8vw,5rem);font-weight:400;background:linear-gradient(120deg,#ff6b9d 0%,#c44569 50%,#ff6b9d 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:0.5rem;letter-spacing:4px;text-transform:uppercase;}
+.subtitle-container{height:clamp(1.5rem,3vh,2rem);overflow:hidden;position:relative;margin-bottom:0.5rem;}
+.header .subtitle{font-size:clamp(0.9rem,2vw,1.2rem);color:#6b7280;font-weight:400;letter-spacing:1px;position:absolute;width:100%;opacity:0;animation:textRotate1 50s infinite;}
+.header .subtitle:nth-child(1){animation-delay:0s;}
+.header .subtitle:nth-child(2){animation-delay:10s;}
+.header .subtitle:nth-child(3){animation-delay:25s;}
+.header .subtitle:nth-child(4){animation-delay:35s;}
+.header .subtitle:nth-child(5){animation-delay:45s;}
+.tagline-container{height:clamp(1.3rem,2.5vh,1.6rem);overflow:hidden;position:relative;margin-bottom:2rem;}
+.tagline{text-align:center;font-size:clamp(0.8rem,1.8vw,1rem);color:#4b5563;font-weight:400;letter-spacing:0.5px;position:absolute;width:100%;opacity:0;animation:textRotate2 60s infinite;}
+.tagline:nth-child(1){animation-delay:0s;}
+.tagline:nth-child(2){animation-delay:15s;}
+.tagline:nth-child(3){animation-delay:30s;}
+.tagline:nth-child(4){animation-delay:45s;}
+.courses-grid{flex:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:1.5rem;animation:slideUp 0.8s ease-out 0.2s backwards;margin-bottom:1.5rem;max-width:1400px;margin-left:auto;margin-right:auto;width:100%;}
+.course-card{background:linear-gradient(135deg,#161b22 0%,#1c2128 100%);padding:clamp(1.5rem,3vw,2.5rem);display:flex;flex-direction:column;justify-content:space-between;transition:all 0.3s ease;cursor:pointer;position:relative;overflow:hidden;border-left:4px solid transparent;min-height:160px;}
+.course-card::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,rgba(139,92,246,0.05) 0%,rgba(59,130,246,0.05) 100%);opacity:0;transition:opacity 0.3s;}
+.course-card:hover::before{opacity:1;}
+.course-card:hover{transform:translateX(8px);border-left-color:#8b5cf6;background:linear-gradient(135deg,#1c2128 0%,#21262d 100%);}
+.course-card.available{border-left-color:#10b981;}
+.course-card.available:hover{border-left-color:#34d399;}
+.course-card.partial{border-left-color:#f59e0b;}
+.course-card.partial:hover{border-left-color:#fbbf24;}
+.course-card.disabled{opacity:0.3;cursor:not-allowed;border-left-color:#374151;}
+.course-card.disabled:hover{transform:none;background:linear-gradient(135deg,#161b22 0%,#1c2128 100%);}
+.course-header{position:relative;z-index:1;margin-bottom:1rem;}
+.course-title{font-size:clamp(1.4rem,2.5vw,2rem);font-weight:400;margin-bottom:0.3rem;color:#f3f4f6;letter-spacing:1px;}
+.course-code{font-size:clamp(0.85rem,1.5vw,1rem);color:#6b7280;font-weight:400;letter-spacing:2px;}
+.quiz-types{display:flex;gap:0.8rem;flex-wrap:wrap;position:relative;z-index:1;}
+.quiz-btn{flex:1;min-width:70px;padding:0.8rem 0.5rem;background:transparent;border:2px solid #374151;color:#9ca3af;font-family:'VT323',monospace;font-weight:400;font-size:clamp(0.85rem,1.5vw,1rem);cursor:pointer;transition:all 0.3s;text-transform:uppercase;letter-spacing:2px;}
+.quiz-btn:hover{background:#3b4a5c;border-color:#4a5f7a;color:#e0e7ef;}
+.quiz-btn.disabled{border-color:#1f2937;color:#374151;cursor:not-allowed;opacity:0.4;}
+.quiz-btn.disabled:hover{background:transparent;border-color:#1f2937;color:#374151;}
+.status-badge{position:absolute;top:1rem;right:1rem;padding:0.4rem 0.8rem;background:#dc2626;font-size:clamp(0.7rem,1.2vw,0.85rem);color:#ffffff;font-weight:400;text-transform:uppercase;letter-spacing:1.5px;clip-path:polygon(0 0,100% 0,95% 100%,5% 100%);z-index:2;}
+.status-badge.soon{background:#f59e0b;}
+.status-badge.help{background:#ef4444;}
+.status-badge.never{background:#6b7280;}
+.footer{text-align:center;padding:1.5rem 0;font-size:clamp(0.85rem,1.5vw,1rem);color:#4b5563;font-weight:400;letter-spacing:0.5px;}
+@keyframes slideDown{from{opacity:0;transform:translateY(-50px);}to{opacity:1;transform:translateY(0);}}
+@keyframes slideUp{from{opacity:0;transform:translateY(50px);}to{opacity:1;transform:translateY(0);}}
+@keyframes textRotate1{0%{opacity:0;transform:translateY(20px);}4%{opacity:1;transform:translateY(0);}16%{opacity:1;transform:translateY(0);}20%{opacity:0;transform:translateY(-20px);}100%{opacity:0;transform:translateY(-20px);}}
+@keyframes textRotate2{0%{opacity:0;transform:translateY(20px);}4%{opacity:1;transform:translateY(0);}21%{opacity:1;transform:translateY(0);}25%{opacity:0;transform:translateY(-20px);}100%{opacity:0;transform:translateY(-20px);}}
+@media(min-width:768px){.courses-grid{grid-template-columns:repeat(2,1fr);}}
+@media(min-width:1200px){.courses-grid{grid-template-columns:repeat(2,1fr);max-width:1200px;}}
+@media(max-width:767px){.container{padding:1.5rem 1rem;}.course-card{min-height:140px;}.courses-grid{gap:1rem;}}
+@media(max-height:700px){.header{padding:1rem 0;}.tagline-container{margin-bottom:1rem;}.courses-grid{gap:1rem;margin-bottom:1rem;}}
+@media(aspect-ratio:4/3){.courses-grid{grid-template-columns:repeat(2,1fr);gap:1.2rem;}}
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Fucking SAMS</h1>
-            <div class="subtitle-container">
-                <div class="subtitle">by someone who stopped caring three semesters ago</div>
-                <div class="subtitle">by someone who barely holding on</div>
-                <div class="subtitle">made by procrastinating instead of studying</div>
-                <div class="subtitle">created in denial of impending failure</div>
-            </div>
-        </div>
-        
-        <div class="tagline-container">
-            <div class="tagline">existence is pain, but at least the quizzes are organized</div>
-            <div class="tagline">we're all gonna fail anyway so why bother pretending</div>
-            <div class="tagline">another semester, another reason to question everything</div>
-            <div class="tagline">built with anxiety and excessive caffeine consumption</div>
-        </div>
-
-        <div class="courses-grid">
-            <div class="course-card available" id="cw-card">
-                <div class="course-header">
-                    <div class="course-title">Cyber Warfare</div>
-                    <div class="course-code">CW_2025</div>
-                </div>
-                <div class="quiz-types">
-                    <button class="quiz-btn" onclick="navigate('Courses/CW/match')">Match</button>
-                    <button class="quiz-btn" onclick="navigate('Courses/CW/mcq')">MCQ</button>
-                    <button class="quiz-btn disabled">T/F</button>
-                </div>
-            </div>
-
-            <div class="course-card partial" id="sp-card">
-                <div class="course-header">
-                    <div class="course-title">Security Policies</div>
-                    <div class="course-code">SP_2025</div>
-                </div>
-                <div class="quiz-types">
-                    <button class="quiz-btn" onclick="navigate('Courses/SP/match/')">Match</button>
-                    <button class="quiz-btn disabled">MCQ</button>
-                    <button class="quiz-btn disabled">T/F</button>
-                </div>
-            </div>
-
-            <div class="course-card disabled">
-                <div class="status-badge soon">SOON™</div>
-                <div class="course-header">
-                    <div class="course-title">Analytic Thinking</div>
-                    <div class="course-code">CT_2025</div>
-                </div>
-                <div class="quiz-types">
-                    <button class="quiz-btn disabled">Match</button>
-                    <button class="quiz-btn disabled">MCQ</button>
-                    <button class="quiz-btn disabled">T/F</button>
-                </div>
-            </div>
-
-            <div class="course-card disabled">
-                <div class="status-badge help">GOD HELP US</div>
-                <div class="course-header">
-                    <div class="course-title">Software Security</div>
-                    <div class="course-code">SAS_2025</div>
-                </div>
-                <div class="quiz-types">
-                    <button class="quiz-btn disabled">Match</button>
-                    <button class="quiz-btn disabled">MCQ</button>
-                    <button class="quiz-btn disabled">T/F</button>
-                </div>
-            </div>
-
-            <div class="course-card disabled">
-                <div class="status-badge">NOT YET</div>
-                <div class="course-header">
-                    <div class="course-title">Vision Computing</div>
-                    <div class="course-code">VIC_2025</div>
-                </div>
-                <div class="quiz-types">
-                    <button class="quiz-btn disabled">Match</button>
-                    <button class="quiz-btn disabled">MCQ</button>
-                    <button class="quiz-btn disabled">T/F</button>
-                </div>
-            </div>
-
-            <div class="course-card disabled">
-                <div class="status-badge never">MAYBE NEVER</div>
-                <div class="course-header">
-                    <div class="course-title">IoT Technologies</div>
-                    <div class="course-code">IOT_2025</div>
-                </div>
-                <div class="quiz-types">
-                    <button class="quiz-btn disabled">Match</button>
-                    <button class="quiz-btn disabled">MCQ</button>
-                    <button class="quiz-btn disabled">T/F</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer">
-            sleep is for people who don't have deadlines
-        </div>
-    </div>
-
-    <script>
-        function navigate(path) {
-            window.location.href = path;
-        }
-
-        document.querySelectorAll('.course-card.disabled').forEach(card => {
-            card.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-            });
-        });
-    </script>
+<div class="container">
+<div class="header">
+<h1>Fucking SAMS</h1>
+<div class="subtitle-container">
+<div class="subtitle">by someone who stopped caring three semesters ago</div>
+<div class="subtitle">by someone who's barely holding on</div>
+<div class="subtitle">made by procrastinating instead of studying</div>
+<div class="subtitle">created in denial of impending failure</div>
+<div class="subtitle">built while questioning every life choice</div>
+</div>
+</div>
+<div class="tagline-container">
+<div class="tagline">existence is pain, but at least the quizzes are organized</div>
+<div class="tagline">we're all gonna fail anyway so why bother pretending</div>
+<div class="tagline">another semester, another reason to question everything</div>
+<div class="tagline">built with anxiety and excessive caffeine consumption</div>
+</div>
+<div class="courses-grid">
+<div class="course-card available">
+<div class="course-header">
+<div class="course-title">Cyber Warfare</div>
+<div class="course-code">CW_2025</div>
+</div>
+<div class="quiz-types">
+<button class="quiz-btn" onclick="navigate('Courses/CW/Match/index.html')">Match</button>
+<button class="quiz-btn" onclick="navigate('Courses/CW/MCQ/index.html')">MCQ</button>
+<button class="quiz-btn disabled">T/F</button>
+</div>
+</div>
+<div class="course-card partial">
+<div class="course-header">
+<div class="course-title">Security Policies</div>
+<div class="course-code">SP_2025</div>
+</div>
+<div class="quiz-types">
+<button class="quiz-btn" onclick="navigate('Courses/SP/Match/index.html')">Match</button>
+<button class="quiz-btn disabled">MCQ</button>
+<button class="quiz-btn disabled">T/F</button>
+</div>
+</div>
+<div class="course-card disabled">
+<div class="status-badge soon">SOON™</div>
+<div class="course-header">
+<div class="course-title">Analytic Thinking</div>
+<div class="course-code">CT_2025</div>
+</div>
+<div class="quiz-types">
+<button class="quiz-btn disabled">Match</button>
+<button class="quiz-btn disabled">MCQ</button>
+<button class="quiz-btn disabled">T/F</button>
+</div>
+</div>
+<div class="course-card disabled">
+<div class="status-badge help">GOD HELP US</div>
+<div class="course-header">
+<div class="course-title">Software Security</div>
+<div class="course-code">SAS_2025</div>
+</div>
+<div class="quiz-types">
+<button class="quiz-btn disabled">Match</button>
+<button class="quiz-btn disabled">MCQ</button>
+<button class="quiz-btn disabled">T/F</button>
+</div>
+</div>
+<div class="course-card disabled">
+<div class="status-badge">NOT YET</div>
+<div class="course-header">
+<div class="course-title">Vision Computing</div>
+<div class="course-code">VIC_2025</div>
+</div>
+<div class="quiz-types">
+<button class="quiz-btn disabled">Match</button>
+<button class="quiz-btn disabled">MCQ</button>
+<button class="quiz-btn disabled">T/F</button>
+</div>
+</div>
+<div class="course-card disabled">
+<div class="status-badge never">MAYBE NEVER</div>
+<div class="course-header">
+<div class="course-title">IoT Technologies</div>
+<div class="course-code">IOT_2025</div>
+</div>
+<div class="quiz-types">
+<button class="quiz-btn disabled">Match</button>
+<button class="quiz-btn disabled">MCQ</button>
+<button class="quiz-btn disabled">T/F</button>
+</div>
+</div>
+</div>
+<div class="footer">sleep is for people who don't have deadlines</div>
+</div>
+<script>
+function navigate(path){window.location.href=path;}
+document.querySelectorAll('.course-card.disabled').forEach(card=>{card.addEventListener('click',(e)=>{e.preventDefault();e.stopPropagation();});});
+</script>
 </body>
 </html>

@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>True/False Quiz</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Arial,sans-serif;background:#f0f4f8;padding:20px;line-height:1.6}
+.container{max-width:900px;margin:0 auto;background:#fff;padding:30px}
+h1{background:#6a9fb5;color:#fff;padding:20px;text-align:center;margin-bottom:30px}
+.score-board{background:#e8f5e9;padding:15px;margin-bottom:20px;text-align:center;font-size:20px;font-weight:bold}
+.question-card{background:#f9f9f9;padding:20px;margin-bottom:20px;border-left:5px solid #6a9fb5}
+.question-text{font-size:18px;font-weight:bold;margin-bottom:15px;color:#333}
+.choices{display:flex;gap:15px;margin-bottom:15px}
+.choice-btn{padding:12px 30px;background:#90caf9;color:#fff;border:none;cursor:pointer;font-size:16px;flex:1}
+.choice-btn:hover{background:#64b5f6}
+.choice-btn:disabled{background:#ccc;cursor:not-allowed}
+.feedback{padding:15px;margin-top:15px;display:none;font-size:16px}
+.feedback.show{display:block}
+.correct{background:#c8e6c9;border-left:5px solid #4caf50;color:#1b5e20}
+.incorrect{background:#ffcdd2;border-left:5px solid #f44336;color:#b71c1c}
+.explanation{margin-top:10px;padding:10px;background:#fff3cd;border-left:3px solid #ffc107;font-style:italic}
+.progress{background:#e0e0e0;height:25px;margin-bottom:20px;position:relative}
+.progress-bar{background:#66bb6a;height:100%;transition:width 0.3s;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold}
+.reset-btn{background:#ff7043;color:#fff;padding:15px 30px;border:none;cursor:pointer;font-size:16px;margin-top:20px;display:block;width:100%}
+.reset-btn:hover{background:#ff5722}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>True/False Quiz - Analytic & Creative Thinking Course</h1>
+<div class="score-board">Score: <span id="score">0</span> / <span id="total">0</span></div>
+<div class="progress">
+<div class="progress-bar" id="progressBar">0%</div>
+</div>
+<div id="questionsContainer"></div>
+<button class="reset-btn" onclick="resetQuiz()">Reset Quiz</button>
+</div>
+<script>
+const questions = [
+{
+q: "Culture must be shared by the vast majority of members to exist.",
+correct: true,
+explanation: "One of the three requirements for culture to exist is that it must be shared by the vast majority of members of a group or society."
+},
+{
+q: "Observable elements of culture include values and assumptions.",
+correct: false,
+explanation: "Values and assumptions are NOT observable elements. Observable elements include practices, language, and symbols. Values and assumptions are non-observable."
+},
+{
+q: "The Nike swoosh symbolizes the Greek goddess Nike.",
+correct: true,
+explanation: "The Nike swoosh was inspired by the Greek goddess Nike, the winged goddess of victory, and symbolizes her flight."
+},
+{
+q: "Socialization is the process by which people learn values, norms, and behaviors.",
+correct: true,
+explanation: "Socialization is defined as the process by which people learn values, norms, behaviours and social skills."
+},
+{
+q: "In a bureaucratic culture, employees have high levels of risk-taking and creativity.",
+correct: false,
+explanation: "High risk-taking and creativity are characteristics of ENTREPRENEURIAL culture. Bureaucratic culture is governed by formal rules and procedures, perpetuating stability."
+},
+{
+q: "Clan culture achieves unity through socialization.",
+correct: true,
+explanation: "Clan culture specifically achieves unity through socialization, with long-term employees serving as mentors."
+},
+{
+q: "In market culture, managers are judged on their effectiveness as role models and mentors.",
+correct: false,
+explanation: "In market culture, managers are NOT judged on being role models or mentors, but on monthly, quarterly, and annual performance goals based on profit."
+},
+{
+q: "Steve Jobs and Apple are examples of entrepreneurial culture.",
+correct: true,
+explanation: "Apple under Steve Jobs is specifically mentioned as an example of entrepreneurial culture characterized by innovation and risk-taking."
+},
+{
+q: "A strong organizational culture can enhance organizational performance.",
+correct: true,
+explanation: "Organizational culture has the potential to enhance organizational performance, individual satisfaction, and sense of certainty about problem-handling."
+},
+{
+q: "The first step in building strong organizational culture is challenging early work assignments.",
+correct: false,
+explanation: "The first step is CAREFUL SELECTION. Challenging early work assignments is Step 2 in the socialization process."
+},
+{
+q: "Successful socialization leads to role clarity and high work performance.",
+correct: true,
+explanation: "Successful socialization outcomes include job satisfaction, role clarity, high work performance, understanding of culture, and commitment to organization."
+},
+{
+q: "Unsuccessful socialization results in increased job satisfaction.",
+correct: false,
+explanation: "Unsuccessful socialization results in JOB DISSATISFACTION, not satisfaction. It also leads to role ambiguity, low performance, and rejection of values."
+},
+{
+q: "Diversity means ensuring organizations recruit the best person from the widest possible talent base.",
+correct: true,
+explanation: "In employment context, diversity means ensuring organizations recruit and retain the best person from the widest possible talent base regardless of characteristics."
+},
+{
+q: "Surface-level diversity refers to individual differences that cannot be seen directly.",
+correct: false,
+explanation: "Surface-level diversity refers to OBSERVABLE differences. Deep-level diversity refers to differences that cannot be seen directly."
+},
+{
+q: "Age, gender, and race are examples of surface-level diversity.",
+correct: true,
+explanation: "Age, gender, race, ethnicity, physical features, and physical abilities are all examples of surface-level diversity."
+},
+{
+q: "Deep-level diversity includes goals, values, and personalities.",
+correct: true,
+explanation: "Deep-level diversity includes goals, values, personalities, work preferences, decision-making styles, attitudes, knowledge, and skills."
+},
+{
+q: "Workforce diversity can increase productivity by bringing diverse talents together.",
+correct: true,
+explanation: "Increased productivity is one of the five main benefits of workforce diversity, bringing diverse talents working toward common goals."
+},
+{
+q: "Diversity always leads to faster decision-making in organizations.",
+correct: false,
+explanation: "Diversity can lead to DELAYED decision-making due to diverging views (bureaucracy). This is one of the negative impacts of diversity."
+},
+{
+q: "Generation X refers to people born before 1976.",
+correct: true,
+explanation: "Generation X is defined as people born before 1976, followed by Generation Y (1977-1994) and Generation Z (1995-2012)."
+},
+{
+q: "Google provides 12 weeks maternity leave to female employees.",
+correct: false,
+explanation: "Google provides 18 WEEKS paid leave and up to 5 years unpaid leave. The 12 weeks is mentioned as the minimum organizations should give."
+},
+{
+q: "IBM believes strong transgender policies are a natural extension of their corporate culture.",
+correct: true,
+explanation: "IBM specifically believes that having strong transgender and gender identification policies is a natural extension of IBM's corporate culture."
+},
+{
+q: "Intel gives freedom to employees to think differently.",
+correct: true,
+explanation: "Intel Inc. is mentioned as an example of a company that gives freedom to employees for thinking differently regarding intellectual abilities."
+},
+{
+q: "Critical thinking involves making decisions based on emotions rather than evidence.",
+correct: false,
+explanation: "Critical thinking involves making decisions based on EVIDENCE rather than emotions or guesses. This is a key characteristic."
+},
+{
+q: "Critical thinkers are curious, open-minded, and willing to challenge ideas.",
+correct: true,
+explanation: "These are the main characteristics of critical thinkers, along with asking strong questions and looking for evidence."
+},
+{
+q: "The first step of critical thinking is to gather relevant information.",
+correct: false,
+explanation: "The first step is to IDENTIFY THE PROBLEM. Gathering relevant information is step 2."
+},
+{
+q: "Critical thinking helps reduce personal bias.",
+correct: true,
+explanation: "One of the key benefits of critical thinking is that it helps reduce personal bias and understand situations from multiple perspectives."
+},
+{
+q: "Creative thinking focuses on logic and evaluation.",
+correct: false,
+explanation: "Creative thinking focuses on IMAGINATION and ORIGINALITY. Logic and evaluation are characteristics of CRITICAL thinking."
+},
+{
+q: "Creative thinkers see opportunities instead of limitations.",
+correct: true,
+explanation: "This is a key characteristic of creative thinkers, along with being imaginative, curious, and open to trying new ideas."
+},
+{
+q: "Brainstorming is a type of creative thinking.",
+correct: true,
+explanation: "Brainstorming is specifically mentioned as one of the types of creative thinking, along with divergent thinking, lateral thinking, metaphorical thinking, and inspirational thinking."
+},
+{
+q: "Creative thinking drives innovation only in art and not in science or business.",
+correct: false,
+explanation: "Creative thinking drives innovation in SCIENCE, ART, BUSINESS, and everyday problem-solving. It is not limited to just art."
+},
+{
+q: "Fear of failure is a barrier to creative thinking.",
+correct: true,
+explanation: "Fear of failure or criticism is listed as one of the main barriers to creative thinking, along with rigid thinking and lack of motivation."
+},
+{
+q: "Critical thinking and creative thinking are the same skill.",
+correct: false,
+explanation: "They are DIFFERENT skills. Critical thinking focuses on logic and evaluation, while creative thinking focuses on imagination and originality."
+},
+{
+q: "Creative thinking generates ideas while critical thinking filters and improves them.",
+correct: true,
+explanation: "This describes how both thinking types work together. Creative thinking generates ideas, while critical thinking filters and improves them."
+},
+{
+q: "Critical thinking should be used when you need new ideas or alternative solutions.",
+correct: false,
+explanation: "CREATIVE thinking should be used when you need new ideas. Critical thinking is used when you need to analyze, evaluate, or judge information."
+},
+{
+q: "Both critical and creative thinking are important for effective problem-solving.",
+correct: true,
+explanation: "Both are equally important. Together they create powerful problem-solving abilities by combining innovation with practicality."
+},
+{
+q: "Personal bias is a barrier only to creative thinking, not critical thinking.",
+correct: false,
+explanation: "Personal bias and emotions are barriers to CRITICAL THINKING specifically. Creative thinking barriers include fear of failure and rigid thinking."
+},
+{
+q: "Embodiment begins with knowing yourself and your cultures.",
+correct: true,
+explanation: "Embodiment begins with knowing yourself: who you are, your cultures, and what you want to create in the world."
+},
+{
+q: "Immersion requires you to become the best expert in one narrow field.",
+correct: false,
+explanation: "For creativity, it can be BETTER to learn widely rather than focus only on becoming the best in one field. Immersion is open-ended."
+},
+{
+q: "Knowledge Mining requires generating hundreds of random ideas like traditional brainstorming.",
+correct: false,
+explanation: "Knowledge Mining does NOT require generating hundreds of random ideas like traditional brainstorming. It uses a different strategy."
+},
+{
+q: "Connecting dots involves building bridges between seemingly unrelated islands of knowledge.",
+correct: true,
+explanation: "This is the first step of connecting dots, also called lateral, relational, or horizontal thinking."
+},
+{
+q: "Donut knowledge is the ability to see what isn't there.",
+correct: true,
+explanation: "Donut knowledge is specifically defined as the ability to see what isn't there, gained through time, experience, and exploration."
+},
+{
+q: "Dreams, Not Needs focuses only on basic human necessities.",
+correct: false,
+explanation: "Dreams, Not Needs focuses on understanding what people find meaningful BEYOND their basic needs. Humans are driven by dreams, longings, and meaning."
+},
+{
+q: "The iPhone is mentioned as an example of a product that is a basic necessity.",
+correct: false,
+explanation: "iPhones are NOT necessities, yet hold deep personal significance. This illustrates that people are driven by dreams and meaning, not just needs."
+},
+{
+q: "Google's 20% time policy allowed employees to spend one day a week on creative projects.",
+correct: true,
+explanation: "Google's 20% time policy encouraged employees to spend one day a week on creative projects, producing successful services."
+},
+{
+q: "Organizations should overlook younger employees' ideas as they are there only to learn.",
+correct: false,
+explanation: "This is FALSE and costly. Organizations should NOT overlook younger employees' insights. They should audit employee skills to identify creative potential."
+},
+{
+q: "The five competencies of Creative Intelligence are: Embodiment, Immersion, Connecting Dots, Donut Knowledge, and Dreams Not Needs.",
+correct: true,
+explanation: "These are the exact five competencies of Creative Intelligence that together form a powerful toolkit for innovation and creativity."
+},
+{
+q: "Culture must shape behavior and perceptions to exist.",
+correct: true,
+explanation: "This is the third requirement for culture to exist, along with being shared by the majority and passed between generations."
+},
+{
+q: "Symbols can include artefacts, dress, office layout, slogans, and ceremonies.",
+correct: true,
+explanation: "All of these are examples of symbols - visible objects, acts, or events that convey meaning to others."
+},
+{
+q: "Practices are non-observable cultural customs.",
+correct: false,
+explanation: "Practices are OBSERVABLE cultural customs such as taboos and ceremonies. They are not non-observable."
+},
+{
+q: "In clan culture, peer pressure to adhere to important norms is weak.",
+correct: false,
+explanation: "In clan culture, peer pressure to adhere to important norms is STRONG. Members also share feelings of pride in membership."
+},
+{
+q: "Fast food establishments are examples of bureaucratic culture.",
+correct: true,
+explanation: "Fast food establishments and government ministries are specifically mentioned as examples of bureaucratic culture that produces standardized goods and services."
+},
+{
+q: "In market culture, the relationship between individuals and organization is contractual.",
+correct: true,
+explanation: "In market culture, the relationship between individuals and the organization is contractual (previously agreed)."
+},
+{
+q: "Culture serves as a control mechanism to channel behavior towards desired behaviors.",
+correct: true,
+explanation: "Culture serves as a control mechanism to channel behaviour towards desired behaviours and to prevent undesired behaviours."
+},
+{
+q: "The seventh step in building strong organizational culture is careful selection.",
+correct: false,
+explanation: "Careful selection is STEP 1. Step 7 is Role model to sustain culture."
+},
+{
+q: "Reward and sustain culture is the fourth step in the socialization process.",
+correct: true,
+explanation: "Step 4 in building strong organizational culture through socialization is Reward and sustain culture."
+},
+{
+q: "Deep-level diversity takes more time to learn but has strong influence on organizational performance.",
+correct: true,
+explanation: "Deep-level diversity takes more time to learn about but has a strong influence on organizational performance."
+},
+{
+q: "Diversity helps attract and retain talent, adding a competitive edge.",
+correct: true,
+explanation: "Attracting and retaining talent is one of the five main benefits of workforce diversity, adding a competitive edge to organizations."
+},
+{
+q: "Conflicts are a positive impact of workforce diversity.",
+correct: false,
+explanation: "Conflicts are a NEGATIVE impact of diversity. People often feel confused, threatened or annoyed by individuals with very different views and backgrounds."
+},
+{
+q: "Generation Y is also called Echo Boomers or Millennials and includes people born 1977-1994.",
+correct: true,
+explanation: "Generation Y (Echo Boomers or Millenniums) specifically refers to people born between 1977-1994."
+},
+{
+q: "Software companies and service sectors provide good environments for differently abled people.",
+correct: true,
+explanation: "This is specifically mentioned as an example of how these sectors accommodate and provide good environments for differently abled people."
+},
+{
+q: "The sixth step of critical thinking is to identify the problem.",
+correct: false,
+explanation: "Identifying the problem is STEP 1. Step 6 is Reflect on the results and learn from them."
+},
+{
+q: "Evaluating the reliability of a source is an example of critical thinking.",
+correct: true,
+explanation: "This is one of the four main examples of critical thinking, along with comparing evidence, identifying flaws, and weighing pros and cons."
+},
+{
+q: "Mind mapping is a method to improve critical thinking.",
+correct: false,
+explanation: "Mind mapping is a method to improve CREATIVE thinking, not critical thinking. Critical thinking is improved by analyzing evidence and recognizing biases."
+},
+{
+q: "Overthinking and self-doubt are barriers to creative thinking.",
+correct: true,
+explanation: "Overthinking and self-doubt are listed as barriers to creative thinking, along with fear of failure and rigid thinking."
+},
+{
+q: "Time pressure and stress are barriers to critical thinking.",
+correct: true,
+explanation: "Time pressure and stress are specifically listed as barriers to critical thinking, along with personal bias and lack of reliable information."
+},
+{
+q: "Lateral thinking is a type of creative thinking.",
+correct: true,
+explanation: "Lateral thinking is one of the five types of creative thinking mentioned, along with divergent, brainstorming, metaphorical, and inspirational thinking."
+},
+{
+q: "Most successful projects use only creative thinking without critical thinking.",
+correct: false,
+explanation: "Most successful projects COMBINE BOTH at different stages. Creative thinking generates ideas while critical thinking filters and improves them."
+},
+{
+q: "Business strategy and scientific research are real-life applications of both thinking types.",
+correct: true,
+explanation: "Business strategy, academic work, scientific research, technology innovation, design, and daily decision-making all use both thinking types."
+},
+{
+q: "Society encourages following curiosity and funds arts generously.",
+correct: false,
+explanation: "Society often DISCOURAGES following curiosity; arts and extraneous subjects are UNDERFUNDED. This limits immersion opportunities."
+},
+{
+q: "Embodiment is required for creating.",
+correct: false,
+explanation: "Embodiment is NOT required for creating, but it is a valuable pool of often underappreciated insight."
+},
+{
+q: "Immersion across diverse subjects builds essential knowledge dots for creative thinking.",
+correct: true,
+explanation: "Immersion across diverse subjects builds essential knowledge dots for creative thinking. Learning widely can be better than focusing on one field."
+},
+{
+q: "Surrounding yourself with people who look for the odd can increase your chances of finding rarities.",
+correct: true,
+explanation: "This is one of the strategies to improve donut knowledge: Bird the Birders - surround yourself with people who know how to look for the odd."
+},
+{
+q: "Knowledge mining involves understanding only what people need, not what is meaningful to them.",
+correct: false,
+explanation: "Knowledge mining involves understanding what is MEANINGFUL beyond basic needs. It focuses on dreams, longings, and meaning, not just needs."
+},
+{
+q: "Companies should audit employee skills and interests to identify creative potential.",
+correct: true,
+explanation: "Companies should audit employee skills and interests to identify creative potential as part of building Creative Intelligence."
+},
+{
+q: "Investing in employees' creative time builds the organization's Creative Intelligence.",
+correct: true,
+explanation: "Investing in employees' creative time through policies like percent time or free time builds the organization's Creative Intelligence."
+},
+{
+q: "Language is a non-observable element of culture.",
+correct: false,
+explanation: "Language is an OBSERVABLE element of culture. It is a shared system of vocal sounds, written signs, and/or gestures."
+},
+{
+q: "Values are rules that govern behaviors of groups of people.",
+correct: false,
+explanation: "NORMS are rules that govern behaviors. Values are basic beliefs that specify general preferences and define what is right and wrong."
+},
+{
+q: "Cultural values are reflected in a society's morals, customs and established practices.",
+correct: true,
+explanation: "This is the definition of how cultural values manifest in society - through morals, customs and established practices."
+},
+{
+q: "Organizations with bureaucratic culture tend to produce customized unique goods.",
+correct: false,
+explanation: "Organizations with bureaucratic culture tend to produce STANDARDIZED goods and services, not customized unique goods."
+},
+{
+q: "In entrepreneurial culture, there is commitment to experimentation and innovation.",
+correct: true,
+explanation: "Entrepreneurial culture is characterized by commitment to experimentation, innovation, and being on the leading edge."
+},
+{
+q: "Training to develop capabilities with culture is Step 5 in building strong organizational culture.",
+correct: false,
+explanation: "Training to develop capabilities with culture is STEP 3. Step 5 is Adoption of cultural value policies."
+},
+{
+q: "Low job involvement is an outcome of successful socialization.",
+correct: false,
+explanation: "Low job involvement is an outcome of UNSUCCESSFUL socialization, along with job dissatisfaction and rejection of values."
+},
+{
+q: "Commitment to organization is an outcome of successful socialization.",
+correct: true,
+explanation: "Commitment to organization is one of the positive outcomes of successful socialization, along with job satisfaction and high performance."
+},
+{
+q: "Religion and marital status are examples of deep-level diversity.",
+correct: false,
+explanation: "Religion and marital status are examples of SURFACE-LEVEL diversity. Deep-level diversity includes values, personalities, and attitudes."
+},
+{
+q: "Decision-making styles and work preferences are part of deep-level diversity.",
+correct: true,
+explanation: "Decision-making styles, work preferences, goals, values, personalities, attitudes, knowledge and skills are all part of deep-level diversity."
+},
+{
+q: "Diversity can help build synergy in teams and enhance communication skills.",
+correct: true,
+explanation: "Building synergy in teams and enhancing communication is one of the five benefits of workforce diversity."
+},
+{
+q: "Diversity always increases productivity without any negative effects.",
+correct: false,
+explanation: "While diversity can increase productivity, it also has negative impacts like conflicts, delayed decision-making, and potential disunity."
+},
+{
+q: "Generation Z refers to people born between 1995-2012.",
+correct: true,
+explanation: "Generation Z is specifically defined as people born between 1995-2012."
+},
+{
+q: "Organizations should allocate tasks to differently abled people according to their abilities.",
+correct: true,
+explanation: "Tasks should be allocated according to ability for differently abled employees, and special infrastructure should be provided."
+},
+{
+q: "To manage deep level diversity, organizations should use only group training.",
+correct: false,
+explanation: "To manage deep level diversity, organizations should give INDIVIDUAL training, not just group training."
+},
+{
+q: "Asking deeper questions can help improve critical thinking.",
+correct: true,
+explanation: "Asking deeper questions is one of the six methods to improve critical thinking, along with analyzing evidence and recognizing biases."
+},
+{
+q: "Challenging assumptions is a way to improve creative thinking.",
+correct: true,
+explanation: "Challenging assumptions is one of the methods to improve creative thinking, along with brainstorming and trying new experiences."
+},
+{
+q: "Lack of motivation is a barrier only to critical thinking.",
+correct: false,
+explanation: "Lack of motivation or inspiration is a barrier to CREATIVE thinking, not critical thinking."
+},
+{
+q: "Reflecting on decisions helps improve critical thinking.",
+correct: true,
+explanation: "Reflecting on decisions is one of the ways to improve critical thinking, helping learn from past choices."
+},
+{
+q: "Trying new experiences can strengthen creative thinking.",
+correct: true,
+explanation: "Trying new experiences is one of the methods to strengthen creative thinking, along with brainstorming and practicing free writing."
+},
+{
+q: "Knowledge gained through deep study cannot be mined to generate creativity.",
+correct: false,
+explanation: "Knowledge gained through deep study CAN be mined to generate creativity. This is a key principle of immersion."
+},
+{
+q: "Donut knowledge can be improved by leaving the familiar and going to new places.",
+correct: true,
+explanation: "Gaining donut knowledge may involve leaving the familiar and going to new places, physically or intellectually, even if uncomfortable."
+},
+{
+q: "You need to be an expert to be a knowledge miner.",
+correct: false,
+explanation: "You do NOT need to be an expert to be a knowledge miner - just observe and explore what's around you."
+},
+{
+q: "The more knowledge you mine, the more dots you connect and patterns you see.",
+correct: true,
+explanation: "This is a fundamental principle of knowledge mining - more knowledge leads to more connections and pattern recognition."
+}
+];
+
+let answered = new Array(questions.length).fill(false);
+let score = 0;
+
+function renderQuestions() {
+const container = document.getElementById('questionsContainer');
+container.innerHTML = '';
+questions.forEach((item, index) => {
+const card = document.createElement('div');
+card.className = 'question-card';
+card.innerHTML = `
+<div class="question-text">${index + 1}. ${item.q}</div>
+<div class="choices">
+<button class="choice-btn" onclick="checkAnswer(${index}, true)">True</button>
+<button class="choice-btn" onclick="checkAnswer(${index}, false)">False</button>
+</div>
+<div class="feedback" id="feedback${index}"></div>
+`;
+container.appendChild(card);
+});
+}
+
+function checkAnswer(index, userAnswer) {
+if (answered[index]) return;
+answered[index] = true;
+const isCorrect = userAnswer === questions[index].correct;
+if (isCorrect) score++;
+updateScore();
+const feedback = document.getElementById('feedback' + index);
+const buttons = document.querySelectorAll('.question-card')[index].querySelectorAll('.choice-btn');
+buttons.forEach(btn => btn.disabled = true);
+if (isCorrect) {
+feedback.className = 'feedback correct show';
+feedback.innerHTML = `<strong>✓ Correct!</strong><div class="explanation">${questions[index].explanation}</div>`;
+} else {
+feedback.className = 'feedback incorrect show';
+feedback.innerHTML = `<strong>✗ Incorrect!</strong><div class="explanation"><strong>Why it's false:</strong> ${questions[index].explanation}</div>`;
+}
+updateProgress();
+}
+
+function updateScore() {
+document.getElementById('score').textContent = score;
+document.getElementById('total').textContent = answered.filter(a => a).length;
+}
+
+function updateProgress() {
+const answeredCount = answered.filter(a => a).length;
+const percentage = Math.round((answeredCount / questions.length) * 100);
+document.getElementById('progressBar').style.width = percentage + '%';
+document.getElementById('progressBar').textContent = percentage + '%';
+}
+
+function resetQuiz() {
+answered = new Array(questions.length).fill(false);
+score = 0;
+updateScore();
+updateProgress();
+renderQuestions();
+window.scrollTo(0, 0);
+}
+
+renderQuestions();
+</script>
+</body>
+</html>

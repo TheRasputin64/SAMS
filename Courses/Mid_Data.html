@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Mining — Complete Revision</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --accent1: #00ffe5;
+    --accent2: #ff2d78;
+    --accent3: #ffe600;
+    --accent4: #7b5cf5;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --ch1: #00ffe5;
+    --ch2: #ff2d78;
+    --ch3: #ffe600;
+    --ch4: #7b5cf5;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  ::selection { background: var(--accent1); color: #000; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── SCANLINE TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,229,0.015) 2px, rgba(0,255,229,0.015) 4px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(10,10,15,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0,255,229,0.15);
+    padding: 0 2rem;
+    display: flex;
+    align-items: stretch;
+    height: 56px;
+    gap: 0;
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    color: var(--accent1);
+    letter-spacing: 3px;
+    display: flex;
+    align-items: center;
+    padding-right: 2rem;
+    border-right: 1px solid rgba(255,255,255,0.08);
+    margin-right: 0;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 0;
+    flex: 1;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav-links::-webkit-scrollbar { display:none; }
+
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    padding: 0 1.2rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s, background 0.2s;
+    border-right: 1px solid rgba(255,255,255,0.04);
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .nav-btn:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+  .nav-btn.ch1:hover, .nav-btn.ch1.active { color: var(--ch1); }
+  .nav-btn.ch2:hover, .nav-btn.ch2.active { color: var(--ch2); }
+  .nav-btn.ch3:hover, .nav-btn.ch3.active { color: var(--ch3); }
+  .nav-btn.ch4:hover, .nav-btn.ch4.active { color: var(--ch4); }
+  .nav-btn.quiz-nav:hover, .nav-btn.quiz-nav.active { color: #fff; background: var(--accent2); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 8rem 4rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,229,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,229,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 60% at 80% 50%, black 20%, transparent 100%);
+  }
+
+  .hero-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--accent1);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .hero-tag::before {
+    content: '';
+    width: 40px;
+    height: 1px;
+    background: var(--accent1);
+  }
+
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(4rem, 10vw, 9rem);
+    line-height: 0.9;
+    letter-spacing: 2px;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .hero h1 span {
+    color: var(--accent1);
+    display: block;
+  }
+
+  .hero-sub {
+    font-size: 1rem;
+    color: var(--muted);
+    margin-top: 1.5rem;
+    max-width: 480px;
+    line-height: 1.8;
+  }
+
+  .hero-chapters {
+    display: flex;
+    gap: 1rem;
+    margin-top: 3rem;
+    flex-wrap: wrap;
+  }
+
+  .hero-ch-pill {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0.5rem 1.2rem;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s;
+    font-weight: 700;
+  }
+  .hero-ch-pill:hover { opacity: 0.8; }
+  .pill-1 { background: var(--ch1); color: #000; }
+  .pill-2 { background: var(--ch2); color: #fff; }
+  .pill-3 { background: var(--ch3); color: #000; }
+  .pill-4 { background: var(--ch4); color: #fff; }
+  .pill-q { background: #fff; color: #000; }
+
+  /* ── SECTIONS ── */
+  .chapter-section {
+    padding: 6rem 4rem;
+    position: relative;
+  }
+
+  .ch-stripe {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .ch-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 7rem;
+    line-height: 1;
+    opacity: 0.07;
+    position: absolute;
+    right: 3rem;
+    top: 3rem;
+    letter-spacing: -4px;
+  }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    line-height: 1;
+    letter-spacing: 1px;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: rgba(255,255,255,0.06);
+    margin: 0 4rem;
+  }
+
+  /* ── CONTENT BLOCKS ── */
+  .content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5px;
+    margin-bottom: 2rem;
+  }
+
+  .card {
+    background: var(--surface);
+    padding: 1.8rem;
+    position: relative;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
+    transition: background 0.2s;
+  }
+  .card:hover { background: var(--surface2); }
+
+  .card-icon {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .card-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+    font-weight: 700;
+  }
+
+  .card p {
+    font-size: 0.9rem;
+    color: rgba(232,232,240,0.75);
+    line-height: 1.75;
+  }
+
+  .card ul {
+    list-style: none;
+    margin-top: 0.5rem;
+  }
+  .card ul li {
+    font-size: 0.88rem;
+    color: rgba(232,232,240,0.75);
+    padding: 0.25rem 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+  .card ul li::before {
+    content: '▸';
+    font-size: 0.7rem;
+    margin-top: 0.25rem;
+    flex-shrink: 0;
+  }
+
+  /* ── WIDE CARD ── */
+  .card-wide {
+    grid-column: 1 / -1;
+  }
+
+  /* ── HIGHLIGHT BOX ── */
+  .highlight-box {
+    background: transparent;
+    padding: 1.5rem 2rem;
+    margin: 1.5rem 0;
+    position: relative;
+    font-size: 0.9rem;
+    color: var(--text);
+    line-height: 1.75;
+  }
+  .highlight-box::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+  }
+
+  /* ── TABLE ── */
+  .dm-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.85rem;
+  }
+  .dm-table th {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 2px solid rgba(255,255,255,0.1);
+  }
+  .dm-table td {
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: rgba(232,232,240,0.8);
+  }
+  .dm-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* ── FORMULA ── */
+  .formula {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    background: rgba(255,255,255,0.04);
+    padding: 0.5rem 1rem;
+    margin: 0.5rem 0;
+    display: inline-block;
+    letter-spacing: 1px;
+  }
+
+  /* ── CHAPTER COLORS ── */
+  .c1 { --c: var(--ch1); }
+  .c2 { --c: var(--ch2); }
+  .c3 { --c: var(--ch3); }
+  .c4 { --c: var(--ch4); }
+
+  .ch-stripe { background: var(--c); }
+  .section-label { color: var(--c); }
+  .card-title { color: var(--c); }
+  .card ul li::before { color: var(--c); }
+  .highlight-box::before { background: var(--c); }
+  .dm-table th { color: var(--c); }
+  .ch-number { color: var(--c); }
+
+  .tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 0.2rem 0.6rem;
+    margin: 0.15rem;
+    background: rgba(255,255,255,0.06);
+    color: var(--muted);
+  }
+  .tag.active-tag { background: var(--c); color: #000; }
+
+  /* ── QUIZ SECTION ── */
+  #quiz {
+    padding: 6rem 4rem;
+    background: var(--surface);
+    position: relative;
+    overflow: hidden;
+  }
+
+  #quiz::before {
+    content: 'QUIZ';
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20rem;
+    position: absolute;
+    right: -2rem;
+    bottom: -4rem;
+    color: rgba(255,45,120,0.04);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .quiz-header {
+    margin-bottom: 3rem;
+  }
+
+  .quiz-meta {
+    display: flex;
+    gap: 2rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .quiz-stat {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .quiz-stat strong {
+    color: var(--accent2);
+    font-size: 1.2rem;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+  }
+
+  /* Progress bar */
+  .progress-wrap {
+    background: rgba(255,255,255,0.06);
+    height: 3px;
+    margin: 2rem 0;
+    position: relative;
+  }
+  .progress-bar {
+    height: 100%;
+    background: var(--accent2);
+    transition: width 0.4s ease;
+    position: relative;
+  }
+  .progress-bar::after {
+    content: '';
+    position: absolute;
+    right: 0; top: -3px;
+    width: 9px; height: 9px;
+    background: var(--accent2);
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  }
+
+  /* Question card */
+  .question-wrap {
+    display: none;
+    animation: slideIn 0.3s ease;
+  }
+  .question-wrap.active { display: block; }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .q-number {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 1rem;
+  }
+
+  .q-chapter-tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 0.2rem 0.7rem;
+    margin-bottom: 1rem;
+    margin-left: 0.5rem;
+  }
+
+  .q-text {
+    font-size: 1.15rem;
+    font-weight: 500;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    color: var(--text);
+    max-width: 780px;
+  }
+
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    max-width: 780px;
+    margin-bottom: 2rem;
+  }
+
+  @media (max-width: 600px) {
+    .options-grid { grid-template-columns: 1fr; }
+    .hero { padding: 7rem 1.5rem 3rem; }
+    .chapter-section, #quiz { padding: 4rem 1.5rem; }
+    .divider { margin: 0 1.5rem; }
+  }
+
+  .option-btn {
+    background: rgba(255,255,255,0.03);
+    border: none;
+    padding: 1.2rem 1.5rem;
+    text-align: left;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    color: var(--text);
+    transition: background 0.15s;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    line-height: 1.5;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+  }
+  .option-btn:hover:not(:disabled) { background: rgba(255,255,255,0.07); }
+  .option-btn:disabled { cursor: default; }
+
+  .option-letter {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    min-width: 24px;
+    color: var(--muted);
+    transition: color 0.15s;
+  }
+
+  .option-btn.correct { background: rgba(0,255,229,0.08); }
+  .option-btn.correct .option-letter { color: var(--accent1); }
+  .option-btn.wrong { background: rgba(255,45,120,0.08); }
+  .option-btn.wrong .option-letter { color: var(--accent2); }
+
+  .feedback-box {
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    display: none;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    max-width: 780px;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+  }
+  .feedback-box.show { display: block; }
+  .feedback-box.correct-fb { background: rgba(0,255,229,0.08); border-left: 3px solid var(--accent1); }
+  .feedback-box.wrong-fb { background: rgba(255,45,120,0.08); border-left: 3px solid var(--accent2); }
+  .feedback-box strong { color: var(--accent1); }
+  .feedback-box.wrong-fb strong { color: var(--accent2); }
+
+  .quiz-nav-btns {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0.85rem 2rem;
+    border: none;
+    cursor: pointer;
+    clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+    transition: opacity 0.2s;
+    font-weight: 700;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-accent { background: var(--accent2); color: #fff; }
+  .btn-outline {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid rgba(255,255,255,0.12);
+    clip-path: none;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0.85rem 1.5rem;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .btn-outline:hover { color: var(--text); border-color: rgba(255,255,255,0.3); }
+
+  /* Results */
+  .results-panel {
+    display: none;
+    text-align: center;
+    padding: 4rem 2rem;
+    position: relative;
+  }
+  .results-panel.show { display: block; }
+
+  .score-ring {
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 2rem;
+    position: relative;
+  }
+  .score-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .score-ring circle {
+    fill: none;
+    stroke-width: 6;
+  }
+  .score-ring .bg-ring { stroke: rgba(255,255,255,0.06); }
+  .score-ring .fg-ring {
+    stroke: var(--accent1);
+    stroke-linecap: square;
+    transition: stroke-dashoffset 1s ease;
+  }
+  .score-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .score-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    color: var(--accent1);
+    line-height: 1;
+  }
+  .score-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .results-msg {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    letter-spacing: 2px;
+  }
+
+  .results-breakdown {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+  }
+  .breakdown-item {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    align-items: center;
+  }
+  .breakdown-item .bd-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    line-height: 1;
+  }
+  .bd-correct { color: var(--accent1); }
+  .bd-wrong { color: var(--accent2); }
+
+  /* Chapter filter buttons */
+  .filter-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+  .filter-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 0.4rem 0.9rem;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.3); }
+  .filter-btn.active { background: rgba(255,45,120,0.15); border-color: var(--accent2); color: var(--accent2); }
+
+  /* Sticky progress */
+  .sticky-progress {
+    position: sticky;
+    top: 56px;
+    z-index: 50;
+    background: var(--surface);
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  /* ── KEY POINT ── */
+  .keypoint {
+    background: var(--surface2);
+    padding: 1rem 1.5rem;
+    margin: 0.5rem 0;
+    font-size: 0.88rem;
+    color: rgba(232,232,240,0.85);
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
+    clip-path: polygon(6px 0, 100% 0, 100% 100%, 0 100%, 0 6px);
+  }
+  .keypoint .kp-dot {
+    width: 6px;
+    height: 6px;
+    margin-top: 0.6rem;
+    flex-shrink: 0;
+    background: var(--c);
+  }
+
+  /* ── CONCEPT MAP ── */
+  .concept-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    margin: 1rem 0;
+  }
+  .concept-node {
+    background: var(--surface2);
+    padding: 0.5rem 1rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--c);
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%, 12px 50%);
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+  .concept-node:first-child {
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%);
+    padding-left: 1rem;
+  }
+  .concept-node:last-child {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 12px 50%);
+    padding-right: 1rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">DM·REV</div>
+  <div class="nav-links">
+    <a class="nav-btn ch1" href="#ch1">CH.1 Intro</a>
+    <a class="nav-btn ch2" href="#ch2">CH.2 Data</a>
+    <a class="nav-btn ch3" href="#ch3a">CH.3 Classification</a>
+    <a class="nav-btn ch3" href="#ch3b">CH.3 Overfitting</a>
+    <a class="nav-btn ch4" href="#ch4">CH.4 ANN</a>
+    <a class="nav-btn quiz-nav" href="#quiz">⚡ Quiz</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-tag">Complete Study Guide · Prof. Christina Albert</div>
+  <h1>Data<br><span>Mining</span></h1>
+  <p class="hero-sub">A comprehensive, structured revision covering all 4 chapters — from data fundamentals to neural networks. Includes a 40-question quiz.</p>
+  <div class="hero-chapters">
+    <a href="#ch1" class="hero-ch-pill pill-1">Chapter 1 · Intro</a>
+    <a href="#ch2" class="hero-ch-pill pill-2">Chapter 2 · Data</a>
+    <a href="#ch3a" class="hero-ch-pill pill-3">Chapter 3 · Classification</a>
+    <a href="#ch3b" class="hero-ch-pill pill-3">Chapter 3 · Overfitting</a>
+    <a href="#ch4" class="hero-ch-pill pill-4">Chapter 4 · ANN</a>
+    <a href="#quiz" class="hero-ch-pill pill-q">⚡ Take the Quiz</a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════
+     CHAPTER 1: INTRODUCTION
+═══════════════════════════════════════════════════ -->
+<section id="ch1" class="chapter-section c1">
+  <div class="ch-stripe"></div>
+  <div class="ch-number">01</div>
+  <div class="section-header">
+    <div>
+      <div class="section-label">Chapter 1</div>
+      <h2 class="section-title">Introduction to Data Mining</h2>
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <div class="card">
+      <div class="card-title">What is Data Mining?</div>
+      <p>Non-trivial extraction of <em>implicit, previously unknown, and potentially useful</em> information from data. It involves exploration and analysis — by automatic or semi-automatic means — of large quantities of data to discover meaningful patterns.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Why Data Mining?</div>
+      <ul>
+        <li>Explosive growth in data from e-commerce, social media, banking, satellites</li>
+        <li>Cheaper, more powerful computing resources</li>
+        <li>Competitive pressure to provide better, customized services</li>
+        <li>Massive scientific datasets (NASA, genomics, simulations)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Origins &amp; Disciplines</div>
+      <ul>
+        <li>Machine Learning / AI</li>
+        <li>Pattern Recognition</li>
+        <li>Statistics</li>
+        <li>Database Systems</li>
+      </ul>
+      <p style="margin-top:0.8rem">A key component of the emerging field of <strong>Data Science &amp; Data-Driven Discovery</strong>.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Scale Challenges</div>
+      <p>Traditional techniques may be unsuitable for data that is:</p>
+      <ul>
+        <li>Large-scale (petabytes)</li>
+        <li>High-dimensional</li>
+        <li>Heterogeneous &amp; Complex</li>
+        <li>Distributed across sources</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="highlight-box">
+    <strong>Core distinction:</strong> Data Mining is about discovering patterns <em>from data</em>, not programming rules explicitly. The insight is extracted, not written.
+  </div>
+
+  <div class="card card-wide" style="margin-bottom:1.5px">
+    <div class="card-title">Data Mining Tasks</div>
+    <table class="dm-table">
+      <tr><th>Category</th><th>Task</th><th>Description</th><th>Example</th></tr>
+      <tr><td>Predictive</td><td>Classification</td><td>Predict discrete class labels</td><td>Fraud detection, spam filter</td></tr>
+      <tr><td>Predictive</td><td>Regression</td><td>Predict continuous values</td><td>House price prediction</td></tr>
+      <tr><td>Descriptive</td><td>Clustering</td><td>Group similar records together</td><td>Customer segmentation</td></tr>
+      <tr><td>Descriptive</td><td>Association Rules</td><td>Find co-occurring items</td><td>Market basket analysis</td></tr>
+      <tr><td>Descriptive</td><td>Anomaly Detection</td><td>Find unusual data points</td><td>Intrusion detection, fraud</td></tr>
+    </table>
+  </div>
+
+  <div class="content-grid" style="margin-top:1.5px">
+    <div class="card">
+      <div class="card-title">Classification — How it Works</div>
+      <div class="concept-flow">
+        <div class="concept-node">Training Set</div>
+        <div class="concept-node">Learn Model</div>
+        <div class="concept-node">Test Set</div>
+        <div class="concept-node">Predict</div>
+      </div>
+      <ul style="margin-top:1rem">
+        <li>Model learns from labeled training data</li>
+        <li>Applied to unseen test data for prediction</li>
+        <li>Examples: fraud detection, churn prediction, galaxy cataloging</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Societal Applications</div>
+      <ul>
+        <li>Predicting impact of climate change</li>
+        <li>Improving healthcare &amp; reducing costs</li>
+        <li>Reducing hunger by boosting agriculture</li>
+        <li>Finding alternative / green energy sources</li>
+        <li>Cyber security intrusion detection</li>
+        <li>Sky survey cataloging (stars, quasars)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════
+     CHAPTER 2: DATA
+═══════════════════════════════════════════════════ -->
+<section id="ch2" class="chapter-section c2">
+  <div class="ch-stripe"></div>
+  <div class="ch-number">02</div>
+  <div class="section-header">
+    <div>
+      <div class="section-label">Chapter 2</div>
+      <h2 class="section-title">Data — Types, Quality &amp; Preprocessing</h2>
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <div class="card">
+      <div class="card-title">Core Concepts</div>
+      <ul>
+        <li><strong>Attribute</strong> — a property/characteristic of an object (a.k.a. variable, feature, field, dimension)</li>
+        <li><strong>Object</strong> — a collection of attributes (a.k.a. record, point, case, instance)</li>
+        <li><strong>Attribute Values</strong> — numbers or symbols assigned to an attribute for a particular object</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Attribute Types</div>
+      <table class="dm-table">
+        <tr><th>Type</th><th>Properties</th><th>Example</th></tr>
+        <tr><td>Nominal</td><td>Distinctness only</td><td>Eye color, zip code, ID</td></tr>
+        <tr><td>Ordinal</td><td>Distinct + Order</td><td>Grades, rankings, {short, medium, tall}</td></tr>
+        <tr><td>Interval</td><td>+Meaningful diff</td><td>Temperature (°C/°F), dates</td></tr>
+        <tr><td>Ratio</td><td>+Meaningful ratio</td><td>Kelvin, length, count, elapsed time</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="highlight-box">
+    <strong>Key Rule:</strong> Nominal → only = ≠ | Ordinal → adds &lt; &gt; | Interval → adds + − | Ratio → adds × ÷. Each level includes all operations of levels above it.
+  </div>
+
+  <div class="content-grid">
+    <div class="card">
+      <div class="card-title">Discrete vs Continuous</div>
+      <ul>
+        <li><strong>Discrete</strong> — finite or countably infinite values (zip codes, counts, words). Binary attributes are special case. Usually integers.</li>
+        <li><strong>Continuous</strong> — real-number values (temperature, height, weight). Represented as floating-point variables.</li>
+        <li><strong>Asymmetric</strong> — only presence (non-zero value) is important (e.g., items in transactions, words in documents)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Types of Datasets</div>
+      <ul>
+        <li><strong>Record Data</strong> — fixed set of attributes per object</li>
+        <li><strong>Data Matrix</strong> — m×n numeric matrix (rows=objects, cols=attributes)</li>
+        <li><strong>Document Data</strong> — term-frequency vectors</li>
+        <li><strong>Transaction Data</strong> — sets of items per transaction</li>
+        <li><strong>Graph Data</strong> — nodes + edges (web, molecules)</li>
+        <li><strong>Ordered</strong> — spatial, temporal, sequential, genomic</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card card-wide" style="margin:1.5px 0">
+    <div class="card-title">Data Quality Problems</div>
+    <table class="dm-table">
+      <tr><th>Problem</th><th>Description</th><th>Handling</th></tr>
+      <tr><td>Noise</td><td>Modification of original values / extraneous objects. Distorts signal.</td><td>Smoothing, robust algorithms</td></tr>
+      <tr><td>Outliers</td><td>Objects considerably different from the rest. Can be noise OR the target.</td><td>Detection algorithms; keep if goal</td></tr>
+      <tr><td>Missing Values</td><td>Not collected, or not applicable to all cases.</td><td>Eliminate / estimate / ignore</td></tr>
+      <tr><td>Duplicate Data</td><td>Same or almost-same records. Common when merging sources.</td><td>Data cleaning (deduplication)</td></tr>
+      <tr><td>Wrong / Fake Data</td><td>Incorrect values entered or fabricated.</td><td>Validation, cross-referencing</td></tr>
+    </table>
+  </div>
+
+  <div class="content-grid" style="margin-top:1.5px">
+    <div class="card">
+      <div class="card-title">Data Preprocessing Pipeline</div>
+      <div class="concept-flow">
+        <div class="concept-node">Raw Data</div>
+        <div class="concept-node">Aggregate</div>
+        <div class="concept-node">Sample</div>
+        <div class="concept-node">Transform</div>
+        <div class="concept-node">Reduce</div>
+        <div class="concept-node">Ready</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Aggregation</div>
+      <ul>
+        <li>Combining attributes or objects into single one</li>
+        <li>Reduces number of attributes or objects</li>
+        <li>Allows change of scale (cities → regions → countries)</li>
+        <li>Aggregated data has <em>less variability</em> — more stable</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Discretization</div>
+      <ul>
+        <li>Converts continuous attribute to ordinal</li>
+        <li><strong>Unsupervised:</strong> Equal-width, Equal-frequency (percentiles), K-means clustering</li>
+        <li><strong>Supervised:</strong> Uses class labels to guide splits</li>
+        <li>Static (once at start) or Dynamic (at each node)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Dimensionality Reduction</div>
+      <ul>
+        <li><strong>Curse of Dimensionality</strong> — data becomes increasingly sparse as dimensions grow; distance/density metrics lose meaning</li>
+        <li><strong>PCA</strong> — finds projection capturing maximum variance</li>
+        <li><strong>SVD</strong> — Singular Value Decomposition</li>
+        <li>Helps reduce noise, time, memory; aids visualization</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Feature Selection &amp; Creation</div>
+      <ul>
+        <li><strong>Redundant features</strong> — duplicate info from other attributes (e.g., price + tax)</li>
+        <li><strong>Irrelevant features</strong> — no useful info (e.g., student ID for GPA prediction)</li>
+        <li><strong>Feature Extraction</strong> — from raw data (edges from images)</li>
+        <li><strong>Feature Construction</strong> — combine existing (mass/volume = density)</li>
+        <li><strong>Mapping</strong> — Fourier, wavelet transforms</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Attribute Transformation</div>
+      <ul>
+        <li>Maps values to new replacement values</li>
+        <li>Simple functions: x<sup>k</sup>, log(x), e<sup>x</sup>, |x|</li>
+        <li><strong>Normalization</strong> — adjusts for differences in frequency, mean, variance, range</li>
+        <li><strong>Standardization</strong> — subtract mean, divide by std dev (z-score)</li>
+        <li>Removes unwanted signals like seasonality</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════
+     CHAPTER 3A: CLASSIFICATION
+═══════════════════════════════════════════════════ -->
+<section id="ch3a" class="chapter-section c3">
+  <div class="ch-stripe"></div>
+  <div class="ch-number">03</div>
+  <div class="section-header">
+    <div>
+      <div class="section-label">Chapter 3 — Part A</div>
+      <h2 class="section-title">Classification: Basic Concepts &amp; Techniques</h2>
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <div class="card">
+      <div class="card-title">Classification Defined</div>
+      <p>Given a training set of records each characterized by <span class="formula">(x, y)</span> where <strong>x</strong> is the attribute set and <strong>y</strong> is the class label, learn a model that maps each x into one of the predefined class labels y.</p>
+      <br>
+      <ul>
+        <li>x = attribute / predictor / independent variable / input</li>
+        <li>y = class / response / dependent variable / output</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Classification Techniques</div>
+      <p><strong>Base Classifiers:</strong></p>
+      <ul>
+        <li>Decision Tree based Methods</li>
+        <li>Rule-based Methods</li>
+        <li>Nearest-Neighbor (k-NN)</li>
+        <li>Naïve Bayes &amp; Bayesian Belief Networks</li>
+        <li>Support Vector Machines (SVM)</li>
+        <li>Neural Networks / Deep Neural Nets</li>
+      </ul>
+      <p style="margin-top:0.8rem"><strong>Ensemble:</strong> Boosting, Bagging, Random Forests</p>
+    </div>
+  </div>
+
+  <div class="card card-wide" style="margin:1.5px 0">
+    <div class="card-title">Building a Classification Model — General Flow</div>
+    <div class="concept-flow" style="flex-wrap:wrap; gap:0; margin:1rem 0">
+      <div class="concept-node">Raw Data</div>
+      <div class="concept-node">Training Set</div>
+      <div class="concept-node">Learn Classifier</div>
+      <div class="concept-node">Model</div>
+      <div class="concept-node">Test Set</div>
+      <div class="concept-node">Predictions</div>
+    </div>
+  </div>
+
+  <div class="content-grid" style="margin-top:1.5px">
+    <div class="card" style="grid-column: 1/-1">
+      <div class="card-title">Decision Trees — Core Concepts</div>
+      <table class="dm-table">
+        <tr><th>Concept</th><th>Explanation</th></tr>
+        <tr><td>Root Node</td><td>Top-most node; represents the entire dataset</td></tr>
+        <tr><td>Internal Node</td><td>Splitting attribute test</td></tr>
+        <tr><td>Leaf Node</td><td>Class label assignment</td></tr>
+        <tr><td>Branch</td><td>Outcome of a test condition</td></tr>
+        <tr><td>Splitting Attribute</td><td>The attribute used to divide data at each node</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="content-grid" style="margin-top:1.5px">
+    <div class="card">
+      <div class="card-title">Hunt's Algorithm</div>
+      <ul>
+        <li>One of the earliest DT induction algorithms</li>
+        <li>If Dₜ has records of <strong>same class y</strong> → leaf node labeled y</li>
+        <li>If Dₜ has <strong>multiple classes</strong> → split using attribute test, recurse on each subset</li>
+        <li>Basis for CART, ID3, C4.5, SLIQ, SPRINT</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Splitting Conditions by Attribute Type</div>
+      <ul>
+        <li><strong>Binary</strong> — already two-way split</li>
+        <li><strong>Nominal</strong> — multi-way (one per value) or binary (group into two subsets)</li>
+        <li><strong>Ordinal</strong> — same as nominal but order property must be preserved</li>
+        <li><strong>Continuous</strong> — binary (A &lt; v or A ≥ v), find best cut; or discretize first</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Decision Tree — Advantages</div>
+      <ul>
+        <li>Relatively inexpensive to construct</li>
+        <li>Extremely fast at classifying unknown records</li>
+        <li>Easy to interpret for small trees</li>
+        <li>Robust to noise (with overfitting prevention)</li>
+        <li>Handles redundant &amp; irrelevant attributes easily</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Decision Tree — Disadvantages</div>
+      <ul>
+        <li>Greedy splitting may miss interacting attributes</li>
+        <li>Each decision boundary involves only a single attribute</li>
+        <li>Multiple trees may fit same data (not unique)</li>
+        <li>Can overfit without pruning mechanisms</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════
+     CHAPTER 3B: OVERFITTING
+═══════════════════════════════════════════════════ -->
+<section id="ch3b" class="chapter-section c3">
+  <div class="ch-stripe"></div>
+  <div class="section-header">
+    <div>
+      <div class="section-label">Chapter 3 — Part B</div>
+      <h2 class="section-title">Model Overfitting</h2>
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <div class="card">
+      <div class="card-title">Types of Errors</div>
+      <table class="dm-table">
+        <tr><th>Error Type</th><th>Definition</th></tr>
+        <tr><td>Training Error</td><td>Errors on the training set (data model was built from)</td></tr>
+        <tr><td>Test Error</td><td>Errors on the held-out test set</td></tr>
+        <tr><td>Generalization Error</td><td>Expected error on random selection from the same distribution</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">Underfitting vs Overfitting</div>
+      <ul>
+        <li><strong>Underfitting</strong> — model too simple; both training AND test error are large</li>
+        <li><strong>Overfitting</strong> — model too complex; training error is small but test error is large</li>
+        <li>As complexity increases, test error first decreases then increases</li>
+        <li>Optimal complexity sits at the minimum of test error</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="highlight-box">
+    <strong>Core insight:</strong> Training error is NOT a reliable estimate of how well the model will perform on unseen data. A model that memorizes the training set will have near-zero training error but high generalization error.
+  </div>
+
+  <div class="content-grid">
+    <div class="card">
+      <div class="card-title">Causes of Overfitting</div>
+      <ul>
+        <li><strong>Not enough training data</strong> — model clings to noise</li>
+        <li><strong>High model complexity</strong> — too many parameters relative to data</li>
+        <li><strong>Multiple Comparison Procedure</strong> — selecting the "best" from many randomly generated models inflates apparent accuracy</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Multiple Comparison Procedure</div>
+      <p>Example: 50 analysts each make 10 random stock predictions. Probability that at least one analyst gets ≥8 correct is surprisingly high — yet the prediction is pure chance. Selecting the "best" model this way leads to false confidence.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Impact of Training Data Size</div>
+      <ul>
+        <li>Increasing training data <strong>reduces the gap</strong> between training and test errors at any given model size</li>
+        <li>More data forces the model to learn genuine patterns rather than noise</li>
+        <li>Even a 50-node tree performs better with twice the training data</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Model Selection Strategies</div>
+      <ul>
+        <li><strong>Validation Set</strong> — hold out a portion of training data to estimate generalization error</li>
+        <li><strong>Incorporating Model Complexity</strong> — penalize complex models (MDL, Structural Risk Minimization)</li>
+        <li>Goal: find the simplest model that explains the data well</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card card-wide" style="margin:1.5px 0">
+    <div class="card-title">Pruning Strategies for Decision Trees</div>
+    <table class="dm-table">
+      <tr><th>Strategy</th><th>When</th><th>How</th></tr>
+      <tr><td>Pre-Pruning (Early Stopping)</td><td>During tree construction</td><td>Stop growing if: all same class; all same attribute values; too few instances; class dist. independent of features; no impurity improvement; gen. error below threshold</td></tr>
+      <tr><td>Post-Pruning</td><td>After full tree grown</td><td>Bottom-up subtree replacement: trim if generalization error improves. Leaf label = majority class of trimmed sub-tree.</td></tr>
+    </table>
+  </div>
+
+  <div class="content-grid" style="margin-top:1.5px">
+    <div class="card card-wide">
+      <div class="card-title">Decision Tree Complexity vs Error — Key Takeaway</div>
+      <div class="keypoint"><div class="kp-dot"></div>4-node tree: higher training error but generalizes better</div>
+      <div class="keypoint"><div class="kp-dot"></div>50-node tree: near-zero training error, but overfits badly on test data</div>
+      <div class="keypoint"><div class="kp-dot"></div>More data at any fixed tree size reduces test error significantly</div>
+      <div class="keypoint"><div class="kp-dot"></div>Overfitting produces trees more complex than necessary — pruning is essential</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════
+     CHAPTER 4: ANN
+═══════════════════════════════════════════════════ -->
+<section id="ch4" class="chapter-section c4">
+  <div class="ch-stripe"></div>
+  <div class="ch-number">04</div>
+  <div class="section-header">
+    <div>
+      <div class="section-label">Chapter 4</div>
+      <h2 class="section-title">Artificial Neural Networks</h2>
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <div class="card">
+      <div class="card-title">Core Idea</div>
+      <p>A complex non-linear function learned as a <strong>composition of simple processing units</strong>.</p>
+      <ul style="margin-top:0.8rem">
+        <li>Collection of nodes (neurons) connected by directed edges</li>
+        <li>Each node: receives signals, computes, transmits</li>
+        <li>Edge weight = strength of connection</li>
+        <li>Analogous to biological neurons + electrical impulses</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Perceptron (Single Neuron)</div>
+      <ul>
+        <li>Simplest ANN — one layer of computation</li>
+        <li>Computes a weighted sum of inputs + applies threshold</li>
+        <li>Can only solve <strong>linearly separable</strong> problems</li>
+        <li>Fails on XOR — no linear hyperplane separates XOR data</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="content-grid" style="margin-top:1.5px">
+    <div class="card card-wide">
+      <div class="card-title">Multi-layer Neural Networks</div>
+      <div class="concept-flow" style="margin:1rem 0">
+        <div class="concept-node">Input Layer</div>
+        <div class="concept-node">Hidden Layer 1</div>
+        <div class="concept-node">Hidden Layer 2</div>
+        <div class="concept-node">···</div>
+        <div class="concept-node">Output Layer</div>
+      </div>
+      <ul style="margin-top:0.8rem">
+        <li>Also called feedforward neural networks</li>
+        <li>Each hidden layer operates on activations from preceding layer</li>
+        <li>Multi-layer ANNs with ≥1 hidden layer can solve ANY classification task involving nonlinear decision surfaces</li>
+        <li>Hidden layers represent <strong>levels of abstraction</strong> — complex features as compositions of simpler features</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="content-grid" style="margin-top:1.5px">
+    <div class="card">
+      <div class="card-title">Why Multiple Hidden Layers?</div>
+      <ul>
+        <li>Each layer extracts features at increasing abstraction</li>
+        <li>Example: Image recognition: edges → shapes → facial parts → face</li>
+        <li><strong>Depth</strong> = number of layers; deeper networks express complex hierarchies</li>
+        <li>Deep networks require fewer total parameters than shallow equivalents for same function</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Design Issues</div>
+      <table class="dm-table">
+        <tr><th>Parameter</th><th>Rule of Thumb</th></tr>
+        <tr><td>Input nodes</td><td>One per binary/continuous attr; k or log₂k per categorical</td></tr>
+        <tr><td>Output nodes</td><td>One for binary; k or log₂k for k-class</td></tr>
+        <tr><td>Hidden layers/nodes</td><td>Tune empirically (no fixed rule)</td></tr>
+        <tr><td>Hyperparameters</td><td>Learning rate, epochs, mini-batch size, initial weights &amp; biases</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card card-wide" style="margin:1.5px 0">
+    <div class="card-title">ANN Characteristics</div>
+    <table class="dm-table">
+      <tr><th>Characteristic</th><th>Detail</th></tr>
+      <tr><td>Universal Approximators</td><td>Multi-layer ANNs can approximate any continuous function — but can overfit if too large</td></tr>
+      <tr><td>Feature Hierarchy</td><td>Naturally represents features at multiple levels of abstraction</td></tr>
+      <tr><td>Gradient Descent</td><td>Optimization may converge to local minimum, not global</td></tr>
+      <tr><td>Training vs Testing</td><td>Model building is compute-intensive; testing is very fast</td></tr>
+      <tr><td>Redundant Attributes</td><td>Handled automatically — weights are learnt for all attributes</td></tr>
+      <tr><td>Noise Sensitivity</td><td>Sensitive to noise in training data</td></tr>
+      <tr><td>Missing Data</td><td>Difficult to handle missing attribute values</td></tr>
+    </table>
+  </div>
+
+  <div class="content-grid" style="margin-top:1.5px">
+    <div class="card card-wide">
+      <div class="card-title">Deep Learning — Why Now?</div>
+      <div class="content-grid" style="margin:0; gap:1px">
+        <div style="padding:1rem; background: rgba(123,92,245,0.06)">
+          <div class="card-title" style="font-size:0.65rem">Hardware</div>
+          <ul><li>Faster GPUs (parallel computation)</li><li>Distributed training infrastructure</li></ul>
+        </div>
+        <div style="padding:1rem; background: rgba(123,92,245,0.06)">
+          <div class="card-title" style="font-size:0.65rem">Data</div>
+          <ul><li>Larger labeled training datasets</li><li>ImageNet, web-scraped corpora</li></ul>
+        </div>
+        <div style="padding:1rem; background: rgba(123,92,245,0.06)">
+          <div class="card-title" style="font-size:0.65rem">Algorithmic Improvements</div>
+          <ul><li>ReLU activation (responsive, solves vanishing gradient)</li><li>Dropout regularization</li><li>Batch normalization</li><li>Supervised &amp; unsupervised pre-training</li></ul>
+        </div>
+        <div style="padding:1rem; background: rgba(123,92,245,0.06)">
+          <div class="card-title" style="font-size:0.65rem">Specialized Architectures</div>
+          <ul><li>CNN — Convolutional Neural Networks (images)</li><li>RNN — Recurrent Neural Networks (sequences)</li><li>ResNet — Residual Networks (skip connections)</li><li>GAN — Generative Adversarial Networks</li></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════
+     QUIZ
+═══════════════════════════════════════════════════ -->
+<section id="quiz">
+  <div class="quiz-header">
+    <div class="section-label" style="color: var(--accent2); font-family:'Space Mono',monospace; font-size:0.65rem; letter-spacing:4px; text-transform:uppercase; margin-bottom:0.5rem">Final Exam Prep</div>
+    <h2 class="section-title" style="font-family:'Bebas Neue',sans-serif; font-size:clamp(2.5rem,5vw,4rem); letter-spacing:1px;">⚡ Comprehensive Quiz</h2>
+    <div class="quiz-meta">
+      <div class="quiz-stat"><strong id="totalQ">40</strong> Questions</div>
+      <div class="quiz-stat"><strong id="scoreDisplay">0</strong> Score</div>
+      <div class="quiz-stat"><strong id="currentQDisp">0</strong> Current</div>
+    </div>
+  </div>
+
+  <div class="filter-row" id="filterRow">
+    <button class="filter-btn active" onclick="setFilter('all')">All Chapters</button>
+    <button class="filter-btn" onclick="setFilter('1')">Ch.1 Intro</button>
+    <button class="filter-btn" onclick="setFilter('2')">Ch.2 Data</button>
+    <button class="filter-btn" onclick="setFilter('3')">Ch.3 Classification</button>
+    <button class="filter-btn" onclick="setFilter('3b')">Ch.3 Overfitting</button>
+    <button class="filter-btn" onclick="setFilter('4')">Ch.4 ANN</button>
+  </div>
+
+  <div class="sticky-progress">
+    <div class="progress-wrap" style="margin:0">
+      <div class="progress-bar" id="progressBar" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div id="quizContainer" style="margin-top:2rem">
+    <!-- Questions injected by JS -->
+  </div>
+
+  <div class="results-panel" id="resultsPanel">
+    <div class="score-ring">
+      <svg viewBox="0 0 120 120">
+        <circle class="bg-ring" cx="60" cy="60" r="54"/>
+        <circle class="fg-ring" id="scoreCircle" cx="60" cy="60" r="54" stroke-dasharray="339.3" stroke-dashoffset="339.3"/>
+      </svg>
+      <div class="score-center">
+        <div class="score-number" id="finalScoreNum">0</div>
+        <div class="score-label">/ <span id="finalTotal">40</span></div>
+      </div>
+    </div>
+    <div class="results-msg" id="resultsMsg">—</div>
+    <div class="results-breakdown">
+      <div class="breakdown-item"><div class="bd-num bd-correct" id="bdCorrect">0</div>Correct</div>
+      <div class="breakdown-item"><div class="bd-num bd-wrong" id="bdWrong">0</div>Wrong</div>
+      <div class="breakdown-item"><div class="bd-num" id="bdPct" style="color:var(--accent3)">0%</div>Score</div>
+    </div>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+      <button class="btn-primary btn-accent" onclick="restartQuiz()">Restart Quiz</button>
+      <button class="btn-outline" onclick="window.scrollTo({top:0,behavior:'smooth'})">Back to Top</button>
+    </div>
+  </div>
+</section>
+
+<script>
+const ALL_QUESTIONS = [
+  // ── CH1 ──
+  { ch:'1', q:'What is the most accurate definition of Data Mining?', opts:['Storing data in a warehouse','Non-trivial extraction of implicit, previously unknown, and potentially useful information from data','Running SQL queries on a database','Collecting data from the internet'], ans:1, exp:'Data Mining is defined as the non-trivial extraction of implicit, previously unknown, and potentially useful information from large datasets.' },
+  { ch:'1', q:'Which of the following is NOT a discipline that Data Mining draws ideas from?', opts:['Machine Learning / AI','Statistics','Web Design','Pattern Recognition'], ans:2, exp:'Data Mining draws from Machine Learning, Statistics, Database Systems, and Pattern Recognition — not Web Design.' },
+  { ch:'1', q:'Which Data Mining task is predictive in nature?', opts:['Clustering','Association Rule Mining','Anomaly Detection','Classification'], ans:3, exp:'Classification is a predictive method — it uses attributes to predict class labels. Clustering and Association Rules are descriptive.' },
+  { ch:'1', q:'What is the goal of Association Rule Mining?', opts:['Grouping similar customers','Finding co-occurring items across transactions','Predicting future sales values','Identifying unusual transactions'], ans:1, exp:'Association Rule Mining finds items that frequently occur together, like in market basket analysis (e.g., milk → bread).' },
+  { ch:'1', q:'In Classification, what role does the Training Set play?', opts:['It is used to evaluate final model accuracy','It is held out from the model building process','The model learns patterns from it to build a classifier','It contains unlabeled data'], ans:2, exp:'The training set contains labeled records. The model learns from this data to build the classification model.' },
+  { ch:'1', q:'Credit card fraud detection is an example of which DM task?', opts:['Clustering','Regression','Classification','Dimensionality Reduction'], ans:2, exp:'Fraud detection classifies transactions as fraudulent or legitimate — a classification task.' },
+  { ch:'1', q:'Sky Survey Cataloging (predicting star vs galaxy) is which kind of DM task?', opts:['Anomaly Detection','Association Rules','Predictive Modeling — Classification','Aggregation'], ans:2, exp:'Predicting the class (star or galaxy) of sky objects based on image features is a classification task.' },
+  { ch:'1', q:'Why do traditional techniques become unsuitable for modern data?', opts:['Modern data is always encrypted','Data is large-scale, high-dimensional, heterogeneous, and distributed','Traditional databases are too expensive','The internet was not available before'], ans:1, exp:'Traditional techniques fail because modern data is massive, high-dimensional, complex, heterogeneous, and often distributed across sources.' },
+  { ch:'1', q:'Clustering is classified as what type of Data Mining task?', opts:['Predictive','Anomaly-based','Descriptive','Supervised'], ans:2, exp:'Clustering is a descriptive task — it finds human-interpretable patterns (groups) in data without predefined class labels.' },
+
+  // ── CH2 ──
+  { ch:'2', q:'Which attribute type supports ONLY the distinctness property (= ≠)?', opts:['Ratio','Ordinal','Nominal','Interval'], ans:2, exp:'Nominal attributes only support distinctness (equality). Examples: eye color, zip code, ID numbers.' },
+  { ch:'2', q:'Temperature in Celsius is an example of which attribute type?', opts:['Ratio','Ordinal','Nominal','Interval'], ans:3, exp:'Celsius temperature is interval: differences are meaningful (30°C - 20°C = 10°C) but ratios are not (0°C is not "no temperature").' },
+  { ch:'2', q:'Temperature in Kelvin is an example of which attribute type?', opts:['Nominal','Interval','Ordinal','Ratio'], ans:3, exp:'Kelvin is ratio scale — it has a meaningful absolute zero, so ratios are meaningful (200K is twice as hot as 100K).' },
+  { ch:'2', q:'What is an Asymmetric Attribute?', opts:['An attribute where only absence is important','An attribute where only presence (non-zero value) is regarded as important','An attribute with equal positive and negative values','An attribute that is symmetric around its mean'], ans:1, exp:'Asymmetric attributes treat only presence as important — e.g., items in transactions or words in documents.' },
+  { ch:'2', q:'Which of the following is NOT a method for handling missing values?', opts:['Eliminate the data object','Estimate the missing value','Add duplicate records','Ignore the missing value during analysis'], ans:2, exp:'Adding duplicates is not a strategy for missing values. The three approaches are: eliminate, estimate, or ignore.' },
+  { ch:'2', q:'What is the Curse of Dimensionality?', opts:['Having too many records in a dataset','Data becoming increasingly sparse as dimensions grow, making distance/density metrics less meaningful','Having too many missing values','The problem of duplicate records in high-dimensional space'], ans:1, exp:'As dimensions increase, data becomes sparse. Distance and density concepts lose meaning, hurting clustering and KNN.' },
+  { ch:'2', q:'What does PCA aim to achieve?', opts:['Remove all outliers from data','Find a projection that captures the largest amount of variation in data','Convert categorical attributes to numeric','Remove duplicate records'], ans:1, exp:'PCA (Principal Components Analysis) finds a projection that maximizes captured variance, effectively reducing dimensions.' },
+  { ch:'2', q:'What distinguishes outliers from noise?', opts:['Outliers are always noise; noise is never outliers','Noise modifies values; outliers are objects considerably different from the rest — and can be the analysis goal','Noise is useful; outliers are always harmful','They are the same concept'], ans:1, exp:'Noise modifies original attribute values. Outliers are extreme data objects — they can be unwanted noise OR the target (fraud, intrusion).' },
+  { ch:'2', q:'Aggregating daily data into yearly averages achieves which main benefit?', opts:['Higher variance and more detail','Less variability and more stable aggregated data','More records in the dataset','Converts categorical to ordinal data'], ans:1, exp:'Aggregation reduces variability — yearly averages are more stable than daily values, as shown in the Australian precipitation example.' },
+  { ch:'2', q:'Feature construction is best described as:', opts:['Removing irrelevant features','Creating new attributes capturing information more efficiently (e.g., mass/volume = density)','Selecting a subset of existing features','Normalizing all attributes'], ans:1, exp:'Feature construction creates new attributes — e.g., combining mass and volume to derive density.' },
+  { ch:'2', q:'In equal-frequency (percentile) discretization, what property holds?', opts:['Each bin has the same width','Each bin has approximately the same number of data points','Each bin is determined by class labels','Each bin uses k-means clustering'], ans:1, exp:'Equal-frequency binning ensures each interval contains approximately the same number of data points.' },
+
+  // ── CH3 CLASSIFICATION ──
+  { ch:'3', q:'In a classification problem, x represents:', opts:['The class label or output','The attribute set / input / predictor','The model itself','The training error'], ans:1, exp:'x = attribute set (predictor, independent variable, input). y = class label (response, dependent variable, output).' },
+  { ch:'3', q:'Hunt\'s Algorithm stops growing a branch when:', opts:['The tree has more than 10 nodes','All records at a node belong to the same class, OR it applies an attribute test to split further','The training error reaches zero','No more attributes remain in the dataset'], ans:1, exp:'Hunt\'s stops and creates a leaf when all records at a node are the same class, otherwise it splits recursively.' },
+  { ch:'3', q:'Which algorithm family does NOT belong to Base Classifiers?', opts:['Decision Trees','Naïve Bayes','Random Forests','Support Vector Machines'], ans:2, exp:'Random Forests is an Ensemble Classifier (bagging of many trees). Base classifiers include Decision Trees, Naïve Bayes, SVM, etc.' },
+  { ch:'3', q:'For a continuous attribute, the most common test condition in decision trees is:', opts:['A multi-way split using all unique values','A binary split (A < v) or (A ≥ v), finding the best cut','Treating it as a nominal attribute','Always discretizing into exactly 3 bins'], ans:1, exp:'Continuous attributes use binary splits — compare attribute to a threshold v. All possible splits are considered to find the best cut.' },
+  { ch:'3', q:'Why might a greedy decision tree induction miss interacting attributes?', opts:['Because it evaluates attributes pairwise','Because it evaluates one attribute at a time at each split, potentially passing over attributes that are discriminating only in combination','Because it does not consider class labels','Because it always picks the attribute with the most values'], ans:1, exp:'Greedy splitting evaluates one attribute at a time. Attributes that only distinguish classes in combination may be skipped.' },
+  { ch:'3', q:'What does it mean that "there could be more than one tree that fits the same data"?', opts:['Decision trees are always unique','Multiple attribute orderings can produce equally valid trees for the same training set','This only happens with overfitting','Trees are unique but algorithms are not'], ans:1, exp:'The decision tree for a dataset is not unique — different splitting orders can produce different trees with equivalent accuracy.' },
+  { ch:'3', q:'For a nominal attribute with k values, binary splitting works by:', opts:['Always splitting into exactly k branches','Grouping the k values into two subsets (must not violate order)','Treating each value as a separate leaf','Discretizing into ordinal values first'], ans:1, exp:'Binary split on nominal: group the k distinct values into two subsets. For ordinal, order must be preserved.' },
+  { ch:'3', q:'CART, ID3, and C4.5 are all examples of:', opts:['Ensemble methods','Nearest-neighbor algorithms','Decision Tree induction algorithms based on Hunt\'s Algorithm','Neural network architectures'], ans:2, exp:'CART, ID3, C4.5, SLIQ, and SPRINT are all decision tree induction algorithms, all building on the foundational Hunt\'s Algorithm.' },
+
+  // ── CH3 OVERFITTING ──
+  { ch:'3b', q:'Overfitting is best described as:', opts:['Model is too simple; both training and test error are high','Model is perfect on all datasets','Model is too complex; training error is low but test error is high','Model has the same error on training and test sets'], ans:2, exp:'Overfitting: complex model, near-zero training error, high test/generalization error. The model memorizes rather than learning.' },
+  { ch:'3b', q:'What is the effect of increasing training data size on overfitting?', opts:['It always eliminates overfitting completely','It increases training error while keeping test error unchanged','It reduces the gap between training and test errors at any given model complexity','It makes the model more complex'], ans:2, exp:'More data helps the model learn genuine patterns. The training-test error gap shrinks, reducing overfitting at any fixed complexity.' },
+  { ch:'3b', q:'The Multiple Comparison Procedure causes overfitting because:', opts:['It selects the worst model from many attempts','Choosing the best performer from many randomly generated models artificially inflates apparent accuracy','It increases training set size','It always involves 50 analysts making predictions'], ans:1, exp:'If you test many random models and pick the best, that "best" is likely just lucky — the selected model is overfit to apparent performance.' },
+  { ch:'3b', q:'Post-pruning in decision trees works by:', opts:['Stopping tree growth early based on a condition','Growing the full tree, then trimming bottom-up, replacing subtrees with leaf nodes when generalization improves','Removing the entire tree and starting over','Selecting attributes randomly'], ans:1, exp:'Post-pruning grows the full tree first, then trims from the bottom up, replacing subtrees with leaves where generalization error improves.' },
+  { ch:'3b', q:'In pre-pruning, which of these is a valid stopping condition?', opts:['Training error exceeds 50%','Number of instances at the node is below a user-specified threshold','The tree has more leaves than internal nodes','Test set accuracy drops below training accuracy'], ans:1, exp:'Pre-pruning stops splitting when: too few instances, no impurity improvement, class distribution independent of features, etc.' },
+  { ch:'3b', q:'Generalization error is best defined as:', opts:['The error on the training dataset','The expected error of a model over random selection of records from the same distribution','The difference between max and min test error','The error after pruning the decision tree'], ans:1, exp:'Generalization error = expected error on unseen data drawn from the same distribution — the true measure of model quality.' },
+
+  // ── CH4 ANN ──
+  { ch:'4', q:'A Perceptron can solve which of the following?', opts:['Any non-linear classification problem','XOR problem','Only linearly separable problems','Any regression problem'], ans:2, exp:'A perceptron uses a linear hyperplane — it can only solve linearly separable problems. XOR is non-linearly separable and cannot be solved by a single perceptron.' },
+  { ch:'4', q:'Why do multi-layer ANNs use multiple hidden layers?', opts:['To reduce training speed','Each layer extracts features at increasing levels of abstraction, enabling complex hierarchical feature representation','To eliminate the need for activation functions','To ensure the model converges to a global minimum'], ans:1, exp:'Multiple hidden layers represent hierarchical abstraction: simple features → complex features. Like edges → shapes → facial parts.' },
+  { ch:'4', q:'How many output nodes should a neural network have for a 5-class problem?', opts:['Always 1','5 or log₂5 (≈3) nodes','Exactly 10','One per input attribute'], ans:1, exp:'For k-class problems: use k or log₂k output nodes. For 5 classes: 5 output nodes (one-hot) or log₂5 ≈ 3 nodes.' },
+  { ch:'4', q:'Which statement about ANN model building vs testing is correct?', opts:['Building is fast; testing is slow','Building is compute-intensive; testing is very fast','Both are equally fast','Neither requires significant computation'], ans:1, exp:'ANN training (building) is very compute-intensive (gradient descent over many epochs). Inference (testing) is a simple forward pass — very fast.' },
+  { ch:'4', q:'Which modern ANN advancement specifically addresses the vanishing gradient problem?', opts:['Dropout regularization','ReLU activation function','Supervised pre-training','Batch normalization'], ans:1, exp:'ReLU (Rectified Linear Unit) is a "responsive" activation function that helps avoid the vanishing gradient problem in deep networks.' },
+  { ch:'4', q:'Convolutional Neural Networks (CNNs) are specialized for which type of data?', opts:['Sequence data (text, time series)','Tabular structured data','Image data','Graph-structured data'], ans:2, exp:'CNNs use convolutional layers designed to detect spatial patterns — ideal for image data. RNNs are for sequences.' },
+  { ch:'4', q:'Why might gradient descent in ANN converge to a local minimum?', opts:['The learning rate is too high','The loss function is non-convex for multi-layer networks, so gradient descent may get trapped','There are too few training examples','The activation function is linear'], ans:1, exp:'Multi-layer ANN loss surfaces are non-convex. Gradient descent follows the gradient locally and may settle in a local minimum rather than the global one.' },
+];
+
+let filteredQuestions = [...ALL_QUESTIONS];
+let currentIndex = 0;
+let score = 0;
+let answered = new Set();
+let currentFilter = 'all';
+
+function setFilter(ch) {
+  currentFilter = ch;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  filteredQuestions = ch === 'all' ? [...ALL_QUESTIONS] : ALL_QUESTIONS.filter(q => q.ch === ch);
+  restartQuiz();
+}
+
+function buildQuiz() {
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = '';
+  document.getElementById('resultsPanel').classList.remove('show');
+  document.getElementById('totalQ').textContent = filteredQuestions.length;
+  document.getElementById('finalTotal').textContent = filteredQuestions.length;
+
+  filteredQuestions.forEach((q, i) => {
+    const chColors = { '1':'var(--ch1)', '2':'var(--ch2)', '3':'var(--ch3)', '3b':'var(--ch3)', '4':'var(--ch4)' };
+    const chLabels = { '1':'Ch.1 · Intro', '2':'Ch.2 · Data', '3':'Ch.3 · Classification', '3b':'Ch.3 · Overfitting', '4':'Ch.4 · ANN' };
+    const color = chColors[q.ch] || 'var(--accent1)';
+    const label = chLabels[q.ch] || 'Ch.?';
+    const letters = ['A','B','C','D'];
+
+    const wrap = document.createElement('div');
+    wrap.className = 'question-wrap' + (i === 0 ? ' active' : '');
+    wrap.id = 'q-' + i;
+    wrap.innerHTML = `
+      <div class="q-number">Question ${i+1} / ${filteredQuestions.length}
+        <span class="q-chapter-tag" style="background:${color}20;color:${color};border:1px solid ${color}40">${label}</span>
+      </div>
+      <div class="q-text">${q.q}</div>
+      <div class="options-grid">
+        ${q.opts.map((opt,oi) => `
+          <button class="option-btn" id="opt-${i}-${oi}" onclick="answer(${i},${oi})">
+            <span class="option-letter">${letters[oi]}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+      <div class="feedback-box" id="fb-${i}"></div>
+      <div class="quiz-nav-btns">
+        ${i > 0 ? `<button class="btn-outline" onclick="goto(${i-1})">← Prev</button>` : ''}
+        ${i < filteredQuestions.length - 1
+          ? `<button class="btn-primary btn-accent" onclick="goto(${i+1})" id="next-${i}" style="opacity:0.4;pointer-events:none">Next →</button>`
+          : `<button class="btn-primary btn-accent" onclick="showResults()" id="next-${i}" style="opacity:0.4;pointer-events:none">Finish Quiz</button>`
+        }
+      </div>
+    `;
+    container.appendChild(wrap);
+  });
+  updateProgress();
+}
+
+function answer(qi, oi) {
+  if (answered.has(qi)) return;
+  answered.add(qi);
+
+  const q = filteredQuestions[qi];
+  const fb = document.getElementById('fb-' + qi);
+
+  for (let i = 0; i < q.opts.length; i++) {
+    const btn = document.getElementById('opt-' + qi + '-' + i);
+    btn.disabled = true;
+    if (i === q.ans) btn.classList.add('correct');
+    if (i === oi && oi !== q.ans) btn.classList.add('wrong');
+  }
+
+  const isCorrect = oi === q.ans;
+  if (isCorrect) score++;
+
+  fb.className = 'feedback-box show ' + (isCorrect ? 'correct-fb' : 'wrong-fb');
+  fb.innerHTML = isCorrect
+    ? `<strong>✓ Correct!</strong> ${q.exp}`
+    : `<strong>✗ Incorrect.</strong> The correct answer is <strong>${q.opts[q.ans]}</strong>. ${q.exp}`;
+
+  const nextBtn = document.getElementById('next-' + qi);
+  if (nextBtn) { nextBtn.style.opacity='1'; nextBtn.style.pointerEvents='auto'; }
+
+  updateProgress();
+  document.getElementById('scoreDisplay').textContent = score;
+}
+
+function goto(i) {
+  document.querySelectorAll('.question-wrap').forEach(w => w.classList.remove('active'));
+  const target = document.getElementById('q-' + i);
+  if (target) { target.classList.add('active'); currentIndex = i; }
+  document.getElementById('currentQDisp').textContent = i + 1;
+  updateProgress();
+}
+
+function updateProgress() {
+  const pct = filteredQuestions.length > 0 ? (answered.size / filteredQuestions.length) * 100 : 0;
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+function showResults() {
+  document.getElementById('quizContainer').style.display = 'none';
+  const panel = document.getElementById('resultsPanel');
+  panel.classList.add('show');
+
+  const total = filteredQuestions.length;
+  const pct = Math.round((score / total) * 100);
+
+  document.getElementById('finalScoreNum').textContent = score;
+  document.getElementById('finalTotal').textContent = total;
+  document.getElementById('bdCorrect').textContent = score;
+  document.getElementById('bdWrong').textContent = total - score;
+  document.getElementById('bdPct').textContent = pct + '%';
+
+  const msgs = [
+    [90, '🔥 Outstanding!', 'var(--accent1)'],
+    [75, '💪 Great Work!', 'var(--accent3)'],
+    [60, '📚 Good Effort!', 'var(--ch4)'],
+    [0, '📖 Keep Studying', 'var(--accent2)'],
+  ];
+  const [,msg, col] = msgs.find(([t]) => pct >= t);
+  document.getElementById('resultsMsg').textContent = msg;
+  document.getElementById('resultsMsg').style.color = col;
+
+  // Animate ring
+  const circumference = 339.3;
+  const offset = circumference - (pct / 100) * circumference;
+  setTimeout(() => {
+    document.getElementById('scoreCircle').style.strokeDashoffset = offset;
+  }, 100);
+
+  panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function restartQuiz() {
+  score = 0;
+  currentIndex = 0;
+  answered = new Set();
+  document.getElementById('scoreDisplay').textContent = 0;
+  document.getElementById('currentQDisp').textContent = 1;
+  document.getElementById('quizContainer').style.display = 'block';
+  document.getElementById('resultsPanel').classList.remove('show');
+  buildQuiz();
+}
+
+// Init
+buildQuiz();
+document.getElementById('currentQDisp').textContent = 1;
+</script>
+</body>
+</html>

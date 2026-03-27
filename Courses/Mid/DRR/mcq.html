@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Recovery Final MCQ Test</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --primary:#0A3D6B;
+  --accent:#1A8CFF;
+  --accent2:#00C9A7;
+  --bg:#EEF4FB;
+  --surface:#fff;
+  --border:#B8CDE4;
+  --text:#0D1F33;
+  --muted:#5A7A99;
+  --correct:#00875A;
+  --incorrect:#CC2B2B;
+  --warning:#E67E00;
+}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);min-height:100vh;padding:0;color:var(--text)}
+
+/* HEADER */
+.header{background:var(--primary);color:#fff;padding:0;display:grid;grid-template-columns:1fr auto;align-items:stretch}
+.header-left{padding:28px 36px}
+.header-left h1{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;letter-spacing:-.5px;margin-bottom:4px}
+.header-left p{font-size:13px;opacity:.65;font-family:'IBM Plex Mono',monospace;letter-spacing:.5px}
+.header-right{background:var(--accent);padding:20px 32px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.timer-label{font-size:11px;font-family:'IBM Plex Mono',monospace;opacity:.8;letter-spacing:1px;text-transform:uppercase}
+.timer-display{font-family:'IBM Plex Mono',monospace;font-size:28px;font-weight:600;letter-spacing:2px}
+.timer-display.urgent{color:#FFD700;animation:pulse .8s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* TOOLBAR */
+.toolbar{background:var(--primary);border-top:1px solid rgba(255,255,255,.1);padding:10px 36px;display:flex;align-items:center;gap:20px}
+.progress-wrap{flex:1}
+.progress-label{font-size:11px;color:rgba(255,255,255,.6);font-family:'IBM Plex Mono',monospace;margin-bottom:5px;letter-spacing:.5px}
+.progress-track{background:rgba(255,255,255,.15);height:6px;overflow:hidden}
+.progress-fill{background:var(--accent);height:100%;width:0%;transition:width .4s ease}
+.progress-text{font-family:'IBM Plex Mono',monospace;font-size:12px;color:rgba(255,255,255,.8);white-space:nowrap;margin-left:16px}
+
+/* QUESTION NAV */
+.q-nav-wrap{background:#fff;border-bottom:2px solid var(--border);padding:12px 36px;overflow-x:auto;white-space:nowrap}
+.q-nav{display:inline-flex;gap:6px}
+.q-dot{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-family:'IBM Plex Mono',monospace;font-weight:600;cursor:pointer;border:2px solid var(--border);background:#fff;color:var(--muted);transition:all .2s}
+.q-dot:hover{border-color:var(--accent);color:var(--accent)}
+.q-dot.active{background:var(--primary);border-color:var(--primary);color:#fff}
+.q-dot.answered-correct{background:var(--correct);border-color:var(--correct);color:#fff}
+.q-dot.answered-wrong{background:var(--incorrect);border-color:var(--incorrect);color:#fff}
+.q-dot.flagged{position:relative}
+.q-dot.flagged::after{content:'';position:absolute;top:2px;right:2px;width:6px;height:6px;background:var(--warning);border-radius:50%}
+
+/* CONTENT */
+.content{max-width:860px;margin:0 auto;padding:32px 20px}
+
+/* QUESTION CARD */
+.question-card{background:var(--surface);border:2px solid var(--border);margin-bottom:24px}
+.question-header{background:var(--primary);padding:14px 24px;display:flex;justify-content:space-between;align-items:center}
+.question-num{font-family:'IBM Plex Mono',monospace;font-size:12px;color:rgba(255,255,255,.7);letter-spacing:1px;text-transform:uppercase}
+.flag-btn{background:none;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);padding:4px 12px;font-size:11px;font-family:'IBM Plex Mono',monospace;cursor:pointer;letter-spacing:.5px;transition:all .2s}
+.flag-btn:hover,.flag-btn.active{background:var(--warning);border-color:var(--warning);color:#fff}
+.question-body{padding:24px}
+.question-text{font-size:17px;font-weight:500;line-height:1.65;color:var(--text);margin-bottom:24px}
+
+/* OPTIONS */
+.options{display:flex;flex-direction:column;gap:10px}
+.option{display:flex;align-items:flex-start;gap:14px;padding:16px 18px;border:2px solid var(--border);background:#fff;cursor:pointer;transition:all .2s;position:relative}
+.option:hover:not(.disabled){border-color:var(--accent);background:#F0F7FF}
+.option-badge{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:13px;color:var(--accent);min-width:20px;padding-top:1px}
+.option-text{font-size:15px;line-height:1.55;color:#2D4A65}
+.option.selected{border-color:var(--primary);background:#EEF4FB}
+.option.selected .option-badge{color:var(--primary)}
+.option.correct{border-color:var(--correct);background:#E8F7F2}
+.option.correct .option-badge,.option.correct .option-text{color:var(--correct)}
+.option.incorrect{border-color:var(--incorrect);background:#FFF0F0}
+.option.incorrect .option-badge,.option.incorrect .option-text{color:var(--incorrect)}
+.option.disabled{cursor:not-allowed}
+.option-indicator{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:16px}
+
+/* EXPLANATION BOX */
+.explanation{background:#F0F7FF;border-left:4px solid var(--accent);padding:14px 18px;margin-top:16px;font-size:13px;color:var(--muted);font-family:'IBM Plex Mono',monospace;display:none}
+.explanation.show{display:block}
+
+/* CONTROLS */
+.controls{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.btn{padding:12px 28px;border:2px solid transparent;font-size:14px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;letter-spacing:.3px;transition:all .2s}
+.btn-primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn-primary:hover:not(:disabled){background:var(--accent);border-color:var(--accent)}
+.btn-ghost{background:transparent;color:var(--primary);border-color:var(--border)}
+.btn-ghost:hover:not(:disabled){border-color:var(--primary)}
+.btn-success{background:var(--accent2);color:#fff;border-color:var(--accent2)}
+.btn-success:hover:not(:disabled){opacity:.85}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* RESULTS */
+.results{display:none;max-width:860px;margin:0 auto;padding:32px 20px}
+.results.active{display:block}
+.score-board{background:var(--primary);color:#fff;padding:40px;text-align:center;margin-bottom:24px}
+.score-board h2{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:2px;opacity:.7;text-transform:uppercase;margin-bottom:16px}
+.score-main{font-family:'IBM Plex Mono',monospace;font-size:72px;font-weight:600;line-height:1}
+.score-pct{font-family:'IBM Plex Mono',monospace;font-size:18px;opacity:.8;margin-top:8px}
+.score-grade{display:inline-block;margin-top:20px;padding:8px 24px;font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:1px;font-weight:600}
+.grade-A{background:var(--accent2);color:#fff}
+.grade-B{background:var(--accent);color:#fff}
+.grade-C{background:var(--warning);color:#fff}
+.grade-F{background:var(--incorrect);color:#fff}
+
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:24px}
+.stat-box{background:var(--surface);border:2px solid var(--border);padding:20px;text-align:center}
+.stat-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+.stat-value{font-family:'IBM Plex Mono',monospace;font-size:28px;font-weight:600}
+.stat-value.green{color:var(--correct)}
+.stat-value.red{color:var(--incorrect)}
+.stat-value.blue{color:var(--accent)}
+
+/* REVIEW */
+.review-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.review-header h3{font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:1px;color:var(--primary);text-transform:uppercase}
+.review-filter{display:flex;gap:6px}
+.filter-btn{padding:6px 14px;border:2px solid var(--border);background:#fff;font-size:11px;font-family:'IBM Plex Mono',monospace;cursor:pointer;color:var(--muted);transition:all .2s}
+.filter-btn.active{background:var(--primary);border-color:var(--primary);color:#fff}
+
+.review-item{background:var(--surface);border:2px solid var(--border);margin-bottom:12px;overflow:hidden}
+.review-item-header{padding:12px 18px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;background:#F8FBFF}
+.review-item-header:hover{background:#EEF4FB}
+.review-q-num{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted)}
+.review-badge{padding:3px 12px;font-size:11px;font-family:'IBM Plex Mono',monospace;font-weight:600;letter-spacing:.5px}
+.review-badge.correct{background:var(--correct);color:#fff}
+.review-badge.incorrect{background:var(--incorrect);color:#fff}
+.review-body{padding:16px 18px;display:none;border-top:2px solid var(--border)}
+.review-body.open{display:block}
+.review-q-text{font-size:14px;font-weight:500;color:var(--text);margin-bottom:14px;line-height:1.5}
+.review-opt{display:flex;gap:10px;padding:10px 14px;font-size:13px;margin-bottom:6px;border:1px solid transparent}
+.review-opt.correct-ans{background:#E8F7F2;border-color:var(--correct);color:var(--correct)}
+.review-opt.user-wrong{background:#FFF0F0;border-color:var(--incorrect);color:var(--incorrect)}
+.review-opt.neutral{color:var(--muted)}
+.review-opt-label{font-family:'IBM Plex Mono',monospace;font-weight:600;min-width:18px}
+
+@media(max-width:600px){
+  .header{grid-template-columns:1fr}
+  .header-right{padding:16px;border-top:1px solid rgba(255,255,255,.15)}
+  .content,.results{padding:16px}
+  .toolbar{padding:10px 16px}
+  .q-nav-wrap{padding:10px 16px}
+  .stats-row{grid-template-columns:1fr}
+  .controls{flex-direction:column}
+  .btn{width:100%}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>DATA RECOVERY</h1>
+    <p>FINAL MCQ ASSESSMENT &mdash; 23 QUESTIONS</p>
+  </div>
+  <div class="header-right">
+    <div class="timer-label">Time Left</div>
+    <div class="timer-display" id="timerDisplay">35:00</div>
+  </div>
+</div>
+
+<div class="toolbar">
+  <div class="progress-wrap">
+    <div class="progress-label">PROGRESS</div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+  <div class="progress-text" id="progressText">0 / 23</div>
+</div>
+
+<div class="q-nav-wrap">
+  <div class="q-nav" id="qNav"></div>
+</div>
+
+<div class="content" id="mainContent">
+  <div class="question-card" id="questionCard">
+    <div class="question-header">
+      <span class="question-num" id="qNum">QUESTION 1 OF 23</span>
+      <button class="flag-btn" id="flagBtn" onclick="toggleFlag()">⚑ FLAG</button>
+    </div>
+    <div class="question-body">
+      <div class="question-text" id="qText"></div>
+      <div class="options" id="optionsContainer"></div>
+      <div class="explanation" id="explanation"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn btn-ghost" id="prevBtn" onclick="goTo(currentQ-1)">← PREVIOUS</button>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost" id="nextBtn" onclick="goTo(currentQ+1)">NEXT →</button>
+      <button class="btn btn-success" id="submitBtn" style="display:none" onclick="submitQuiz()">SUBMIT TEST ✓</button>
+    </div>
+  </div>
+</div>
+
+<div class="results" id="results">
+  <div class="score-board">
+    <h2>Test Complete</h2>
+    <div class="score-main" id="scoreMain"></div>
+    <div class="score-pct" id="scorePct"></div>
+    <div id="scoreGrade"></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-label">Correct</div><div class="stat-value green" id="statCorrect"></div></div>
+    <div class="stat-box"><div class="stat-label">Wrong</div><div class="stat-value red" id="statWrong"></div></div>
+    <div class="stat-box"><div class="stat-label">Time Used</div><div class="stat-value blue" id="statTime"></div></div>
+  </div>
+  <div style="text-align:center;margin-bottom:28px">
+    <button class="btn btn-primary" onclick="resetQuiz()">RETAKE TEST</button>
+  </div>
+  <div class="review-header">
+    <h3>Answer Review</h3>
+    <div class="review-filter">
+      <button class="filter-btn active" onclick="filterReview('all',this)">ALL</button>
+      <button class="filter-btn" onclick="filterReview('correct',this)">CORRECT</button>
+      <button class="filter-btn" onclick="filterReview('wrong',this)">WRONG</button>
+    </div>
+  </div>
+  <div id="reviewContainer"></div>
+</div>
+
+<script>
+const TOTAL_SECONDS = 35 * 60;
+let secondsLeft = TOTAL_SECONDS;
+let timerInterval = null;
+let timerStarted = false;
+let timeUsed = 0;
+
+const questions = [
+  {
+    q: "Which of the following is a key step in developing a recovery plan?",
+    opts: ["Performing a Business Impact Analysis (BIA)", "Ignoring small incidents", "Hiring new vendors", "ALL"],
+    correct: 0
+  },
+  {
+    q: "What is the primary focus of a Disaster Recovery Plan (DRP)?",
+    opts: ["Preventing cyberattacks", "Restoring IT systems after a disruption", "Training employees", "Not ALL"],
+    correct: 1
+  },
+  {
+    q: "What is the main difference between a Disaster Recovery Plan (DRP) and a Business Continuity Plan (BCP)?",
+    opts: ["DRP focuses on technology; BCP focuses on business operations.", "DRP is for natural disasters; BCP is for cyberattacks.", "DRP is broader than BCP", "NOT ALL"],
+    correct: 0
+  },
+  {
+    q: "What does RPO (Recovery Point Objective) determine?",
+    opts: ["The time allowed to fix the system", "The maximum acceptable data loss in terms of time", "The cost of the backup", "ALL"],
+    correct: 1
+  },
+  {
+    q: "What is the purpose of a risk matrix in the risk assessment process?",
+    opts: ["To ignore potential risks", "To identify potential risks and threats", "To assign risk levels based on impact and likelihood", "ALL"],
+    correct: 2
+  },
+  {
+    q: "What is a crucial aspect of recovering from a Ransomware attack?",
+    opts: ["Deleting all backups", "Restoring from clean, air-gapped backups", "Turning off the firewalls", "ALL"],
+    correct: 1
+  },
+  {
+    q: "What is the goal of testing a DRP?",
+    opts: ["To comply with regulations and ensure efficacy", "To increase the RTO", "To destroy old data", "NOT ALL"],
+    correct: 0
+  },
+  {
+    q: "What is the purpose of the disaster recovery policy?",
+    opts: ["Preventing cybersecurity incidents from occurring", "Ensuring damage is quickly recovered from after an incident.", "Analyzing the cause of attacks and identifying improvements to procedures.", "NOT ALL"],
+    correct: 1
+  },
+  {
+    q: "Which of the following would be included in a disaster recovery policy?",
+    opts: ["Timeline for data recovery", "Definition of the backup process", "Analysis of the cause of the disaster", "A + C"],
+    correct: 3
+  },
+  {
+    q: "What is the RPO of a critical system?",
+    opts: ["The acceptable time frame for the system to be recovered after a disaster", "The amount of data that must be backed up in case of a disaster.", "The amount of data that is acceptable to be lost after a disaster.", "NOT ALL"],
+    correct: 1
+  },
+  {
+    q: "What is the role of a risk owner in the risk assessment process?",
+    opts: ["To eliminate all vulnerabilities", "To ignore potential risks", "To accept and manage specific risks", "ALL"],
+    correct: 2
+  },
+  {
+    q: "What is the purpose of a risk register in the risk assessment process?",
+    opts: ["To eliminate all vulnerabilities", "To identify, assess, and track risks", "To ignore potential risks", "ALL"],
+    correct: 1
+  },
+  {
+    q: "What risk assessment approach involves assigning subjective values to assess the impact and likelihood of risks?",
+    opts: ["Subjective risk assessment", "Qualitative risk assessment", "Quantitative risk assessment", "NOT ALL"],
+    correct: 0
+  },
+  {
+    q: "Which is a Valid Statement about Anomaly Detection from the context of recent trends in data backup and recovery?",
+    opts: ["Analyzing backup logs in real-time to detect unusual file changes or entropy, which can indicate ransomware activity.", "Scanning backups during the backup process to ensure 'clean' data is restored.", "AI flags failed or corrupted backups before they become critical issues", "NOT ALL"],
+    correct: 0
+  },
+  {
+    q: "Which is a valid strategy focus based on recent trends in data backup and recovery, 2026?",
+    opts: ["Immutability", "Automation", "Near-zero recovery times (RTOs)", "ALL"],
+    correct: 3
+  },
+  {
+    q: "Which is a proper data recovery solution if there has been an OS failure causing the device to not be able to boot up properly?",
+    opts: ["Use a Live USB to boot up from another operating system so that you can access the data from the storage medium.", "Repair the hardware whether yourself or by a specialized company, focusing on one-time recovery to salvage any data you can.", "Use file carving tools or recovery tools to recover data, since the OS often does not immediately remove data from the drive.", "NOT ALL"],
+    correct: 0
+  },
+  {
+    q: "What is the purpose of a risk assessment report in cybersecurity risk management?",
+    opts: ["To eliminate all vulnerabilities", "To communicate the results of the risk assessment", "To promote unrestricted data sharing", "NOT ALL"],
+    correct: 1
+  },
+  {
+    q: "What is a Valid statement about Air Gapping in the context of data backup and recovery?",
+    opts: ["Physically or logically isolating backup data from the network to ensure a 'clean room' recovery option exists even if the primary network is fully compromised", "Utilizing storage featuring Write Once Read Many (WORM) that cannot be modified, for tightening regulations", "Replicating data to cloud providers (AWS, Azure, Google Cloud) for protection against site-wide disasters", "ALL"],
+    correct: 0
+  },
+  {
+    q: "What is a Valid statement about Cloud for Disaster Recovery in the context of data backup and recovery?",
+    opts: ["Physically or logically isolating backup data from the network to ensure a 'clean room' recovery option.", "Utilizing storage featuring Write Once Read Many that cannot be modified, for tightening regulations.", "Replicating data to cloud providers (AWS, Azure, Google Cloud) for protection against site-wide disasters.", "ALL"],
+    correct: 2
+  },
+  {
+    q: "What is a Valid statement about WORM in the context of data backup and recovery?",
+    opts: ["Physically or logically isolating backup data from the network to ensure a 'clean room' recovery option.", "Utilizing storage featuring Write Once Read Many that cannot be modified, for tightening regulations.", "Replicating data to cloud providers (AWS, Azure, Google Cloud) for protection against site-wide disasters.", "ALL"],
+    correct: 1
+  },
+  {
+    q: "Which of the following is a preventive risk mitigation strategy?",
+    opts: ["Incident response planning", "Encryption of sensitive data", "Data backup and recovery", "ALL"],
+    correct: 1
+  },
+  {
+    q: "What risk mitigation strategy involves isolating sensitive systems or data from the rest of the network?",
+    opts: ["Network segmentation", "Risk avoidance", "Risk awareness", "ALL"],
+    correct: 0
+  },
+  {
+    q: "Which of the following methods focuses on the severity of a given vulnerability and does not account for the likelihood of the vulnerability being exploited?",
+    opts: ["Annual Loss Expectancy (ALE)", "FAIR", "CVSS", "OCTAVE"],
+    correct: 2
+  }
+];
+
+let currentQ = 0;
+let userAnswers = new Array(questions.length).fill(null);
+let flagged = new Array(questions.length).fill(false);
+let submitted = false;
+
+// ---- TIMER ----
+function startTimer(){
+  if(timerStarted) return;
+  timerStarted = true;
+  timerInterval = setInterval(()=>{
+    secondsLeft--;
+    timeUsed++;
+    updateTimerDisplay();
+    if(secondsLeft<=0){clearInterval(timerInterval);submitQuiz();}
+  },1000);
+}
+function updateTimerDisplay(){
+  const m = Math.floor(secondsLeft/60);
+  const s = secondsLeft%60;
+  const el = document.getElementById('timerDisplay');
+  el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  if(secondsLeft<=300) el.classList.add('urgent'); else el.classList.remove('urgent');
+}
+
+// ---- RENDER ----
+function render(){
+  if(!timerStarted && !submitted) startTimer();
+  const q = questions[currentQ];
+  document.getElementById('qNum').textContent = `QUESTION ${currentQ+1} OF ${questions.length}`;
+
+  const flagBtn = document.getElementById('flagBtn');
+  flagBtn.classList.toggle('active', flagged[currentQ]);
+
+  document.getElementById('qText').textContent = q.q;
+
+  const answered = userAnswers[currentQ] !== null;
+  let html = '';
+  q.opts.forEach((opt,i)=>{
+    let cls = 'option';
+    let indicator = '';
+    if(answered){
+      cls += ' disabled';
+      if(i === q.correct){cls += ' correct'; indicator='<span class="option-indicator">✓</span>';}
+      else if(i === userAnswers[currentQ]){cls += ' incorrect'; indicator='<span class="option-indicator">✗</span>';}
+    } else if(userAnswers[currentQ]===i){
+      cls += ' selected';
+    }
+    html += `<div class="${cls}" onclick="selectOpt(${i})">
+      <div class="option-badge">${String.fromCharCode(65+i)}</div>
+      <div class="option-text">${opt}</div>
+      ${indicator}
+    </div>`;
+  });
+  document.getElementById('optionsContainer').innerHTML = html;
+
+  const expEl = document.getElementById('explanation');
+  expEl.classList.remove('show');
+
+  updateProgress();
+  updateNav();
+  updateButtons();
+}
+
+function selectOpt(i){
+  if(userAnswers[currentQ]!==null || submitted) return;
+  userAnswers[currentQ]=i;
+  render();
+}
+
+function toggleFlag(){
+  flagged[currentQ]=!flagged[currentQ];
+  document.getElementById('flagBtn').classList.toggle('active',flagged[currentQ]);
+  updateNav();
+}
+
+function goTo(i){
+  if(i<0||i>=questions.length) return;
+  currentQ=i; render();
+}
+
+function updateProgress(){
+  const done = userAnswers.filter(a=>a!==null).length;
+  const pct = (done/questions.length)*100;
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('progressText').textContent=`${done} / ${questions.length}`;
+}
+
+function updateNav(){
+  const nav = document.getElementById('qNav');
+  let html='';
+  questions.forEach((_,i)=>{
+    let cls='q-dot';
+    if(i===currentQ) cls+=' active';
+    else if(userAnswers[i]!==null){
+      cls += userAnswers[i]===questions[i].correct?' answered-correct':' answered-wrong';
+    }
+    if(flagged[i]) cls+=' flagged';
+    html+=`<div class="${cls}" onclick="goTo(${i})">${i+1}</div>`;
+  });
+  nav.innerHTML=html;
+}
+
+function updateButtons(){
+  document.getElementById('prevBtn').disabled = currentQ===0;
+  const isLast = currentQ===questions.length-1;
+  document.getElementById('nextBtn').style.display = isLast?'none':'inline-block';
+  document.getElementById('submitBtn').style.display = isLast?'inline-block':'none';
+}
+
+// ---- BUILD NAV INITIALLY ----
+function buildNav(){updateNav();}
+
+// ---- SUBMIT ----
+function submitQuiz(){
+  submitted=true;
+  clearInterval(timerInterval);
+  const mUsed = Math.floor(timeUsed/60);
+  const sUsed = timeUsed%60;
+
+  let correct=0;
+  userAnswers.forEach((a,i)=>{if(a===questions[i].correct)correct++;});
+  const wrong=questions.length-correct;
+  const pct=((correct/questions.length)*100).toFixed(1);
+
+  document.getElementById('mainContent').style.display='none';
+  document.querySelector('.q-nav-wrap').style.display='none';
+  const res = document.getElementById('results');
+  res.classList.add('active');
+
+  document.getElementById('scoreMain').textContent=`${correct}/${questions.length}`;
+  document.getElementById('scorePct').textContent=`${pct}%`;
+
+  let grade,gradeCls;
+  if(pct>=90){grade='GRADE A';gradeCls='grade-A';}
+  else if(pct>=75){grade='GRADE B';gradeCls='grade-B';}
+  else if(pct>=60){grade='GRADE C';gradeCls='grade-C';}
+  else{grade='GRADE F';gradeCls='grade-F';}
+  document.getElementById('scoreGrade').innerHTML=`<div class="score-grade ${gradeCls}">${grade}</div>`;
+
+  document.getElementById('statCorrect').textContent=correct;
+  document.getElementById('statWrong').textContent=wrong;
+  document.getElementById('statTime').textContent=`${String(mUsed).padStart(2,'0')}:${String(sUsed).padStart(2,'0')}`;
+
+  renderReview('all');
+}
+
+function renderReview(filter){
+  const container = document.getElementById('reviewContainer');
+  let html='';
+  questions.forEach((q,i)=>{
+    const ua=userAnswers[i];
+    const isCorrect=(ua===q.correct);
+    if(filter==='correct'&&!isCorrect) return;
+    if(filter==='wrong'&&isCorrect) return;
+    html+=`<div class="review-item">
+      <div class="review-item-header" onclick="toggleReview(this)">
+        <span class="review-q-num">Q${i+1} — ${q.q.substring(0,60)}${q.q.length>60?'…':''}</span>
+        <span class="review-badge ${isCorrect?'correct':'incorrect'}">${isCorrect?'CORRECT':'WRONG'}</span>
+      </div>
+      <div class="review-body">
+        <div class="review-q-text">${q.q}</div>
+        ${q.opts.map((opt,oi)=>{
+          let cls='neutral';
+          let tag='';
+          if(oi===q.correct){cls='correct-ans';tag=' ← Correct Answer';}
+          if(oi===ua&&oi!==q.correct){cls='user-wrong';tag=' ← Your Answer';}
+          if(oi===ua&&oi===q.correct) tag=' ← Your Answer (Correct)';
+          return `<div class="review-opt ${cls}"><div class="review-opt-label">${String.fromCharCode(65+oi)}</div><div>${opt}${tag}</div></div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  });
+  container.innerHTML=html||'<p style="color:var(--muted);font-family:IBM Plex Mono,monospace;padding:20px">No questions match this filter.</p>';
+}
+
+function toggleReview(header){
+  const body=header.nextElementSibling;
+  body.classList.toggle('open');
+}
+
+function filterReview(type, btn){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderReview(type);
+}
+
+function resetQuiz(){
+  currentQ=0;
+  userAnswers=new Array(questions.length).fill(null);
+  flagged=new Array(questions.length).fill(false);
+  submitted=false;
+  secondsLeft=TOTAL_SECONDS;
+  timeUsed=0;
+  timerStarted=false;
+  clearInterval(timerInterval);
+  updateTimerDisplay();
+  document.getElementById('timerDisplay').classList.remove('urgent');
+  document.getElementById('results').classList.remove('active');
+  document.getElementById('mainContent').style.display='block';
+  document.querySelector('.q-nav-wrap').style.display='block';
+  render();
+}
+
+buildNav();
+render();
+</script>
+</body>
+</html>

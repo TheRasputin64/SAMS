@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT Disaster Recovery — Matching Test</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@400;600;700;800&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #070C18;
+    --surface:  #0D1526;
+    --panel:    #111D35;
+    --border:   #1C2E50;
+    --accent:   #00C8FF;
+    --accent2:  #00FFD0;
+    --danger:   #FF3B5C;
+    --success:  #00E87B;
+    --warning:  #FFB800;
+    --text:     #C8D8F0;
+    --muted:    #4A6080;
+    --mono:     'Share Tech Mono', monospace;
+    --sans:     'Barlow', sans-serif;
+    --cond:     'Barlow Condensed', sans-serif;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid overlay */
+  body::before {
+    content:'';
+    position:fixed;
+    inset:0;
+    background-image:
+      linear-gradient(rgba(0,200,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,200,255,0.025) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    position: relative;
+    background: var(--surface);
+    border-bottom: 2px solid var(--accent);
+    padding: 28px 40px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    overflow: hidden;
+    z-index:1;
+  }
+  .header::after {
+    content:'';
+    position:absolute;
+    top:0; left:0; right:0; bottom:0;
+    background: linear-gradient(90deg, rgba(0,200,255,0.06) 0%, transparent 60%);
+    pointer-events:none;
+  }
+  .header-icon {
+    width:56px; height:56px;
+    border:2px solid var(--accent);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+    position:relative;
+  }
+  .header-icon svg { width:28px; height:28px; }
+  .header-icon::before {
+    content:'';
+    position:absolute;
+    inset:-6px;
+    border:1px solid rgba(0,200,255,0.2);
+  }
+  .header-text h1 {
+    font-family: var(--cond);
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #fff;
+    line-height: 1;
+  }
+  .header-text h1 span { color: var(--accent); }
+  .header-text p {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .header-badge {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent2);
+    border:1px solid var(--accent2);
+    padding: 4px 10px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    opacity:0.7;
+  }
+
+  /* ── INSTRUCTIONS ── */
+  .instructions {
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 40px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    z-index:1;
+    position:relative;
+  }
+  .instructions::before {
+    content:'//';
+    font-family:var(--mono);
+    color:var(--accent);
+    font-size:14px;
+  }
+  .instructions p {
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing:0.3px;
+  }
+  .instructions p strong { color: var(--accent); }
+
+  /* ── CONTENT ── */
+  .content {
+    position:relative;
+    z-index:1;
+    padding: 30px 40px 60px;
+    max-width: 1700px;
+    margin: 0 auto;
+  }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    display:flex;
+    align-items:stretch;
+    gap:0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    margin-bottom: 28px;
+    overflow:hidden;
+  }
+  .stat-block {
+    flex:1;
+    padding:18px 28px;
+    border-right:1px solid var(--border);
+    position:relative;
+  }
+  .stat-block:last-child { border-right:none; }
+  .stat-block::before {
+    content:'';
+    position:absolute;
+    top:0; left:0;
+    width:3px; height:100%;
+    background: var(--accent);
+  }
+  .stat-block:nth-child(2)::before { background: var(--accent2); }
+  .stat-block:nth-child(3)::before { background: var(--warning); }
+  .stat-label {
+    font-family: var(--mono);
+    font-size:10px;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+    margin-bottom:6px;
+  }
+  .stat-value {
+    font-family: var(--cond);
+    font-size: 38px;
+    font-weight:800;
+    color: var(--accent);
+    line-height:1;
+  }
+  .stat-block:nth-child(2) .stat-value { color: var(--accent2); }
+  .stat-block:nth-child(3) .stat-value { color: var(--warning); }
+
+  /* progress bar */
+  .progress-container {
+    flex:2;
+    padding:18px 28px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+  .progress-label {
+    font-family:var(--mono);
+    font-size:10px;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+    margin-bottom:10px;
+    display:flex;
+    justify-content:space-between;
+  }
+  .progress-track {
+    height:6px;
+    background:var(--border);
+    position:relative;
+    overflow:hidden;
+  }
+  .progress-fill {
+    height:100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    width:0%;
+    transition: width 0.5s ease;
+    position:relative;
+  }
+  .progress-fill::after {
+    content:'';
+    position:absolute;
+    right:0; top:0; bottom:0; width:20px;
+    background: rgba(255,255,255,0.3);
+    filter:blur(4px);
+  }
+
+  /* ── MATCHING GRID ── */
+  .matching-grid {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+    margin-bottom:24px;
+  }
+
+  .col-header {
+    background: var(--surface);
+    border:1px solid var(--accent);
+    border-bottom:none;
+    padding:14px 20px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .col-header span {
+    font-family:var(--cond);
+    font-size:16px;
+    font-weight:800;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--accent);
+  }
+  .col-header .col-tag {
+    font-family:var(--mono);
+    font-size:10px;
+    color:var(--muted);
+    margin-left:auto;
+    border:1px solid var(--border);
+    padding:2px 7px;
+  }
+
+  .items-list {
+    border:1px solid var(--border);
+    background:var(--surface);
+  }
+
+  .item-row {
+    display:flex;
+    align-items:stretch;
+    border-bottom:1px solid var(--border);
+    position:relative;
+  }
+  .item-row:last-child { border-bottom:none; }
+
+  .item-num {
+    background:var(--panel);
+    border-right:1px solid var(--border);
+    min-width:52px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--muted);
+    flex-shrink:0;
+    padding:0 8px;
+    user-select:none;
+  }
+
+  .item-content {
+    padding:14px 18px;
+    flex:1;
+    cursor:pointer;
+    font-size:13px;
+    line-height:1.5;
+    color:var(--text);
+    transition: background 0.15s, color 0.15s;
+    display:flex;
+    align-items:center;
+    position:relative;
+  }
+  .item-content::before {
+    content:'';
+    position:absolute;
+    left:0; top:0; bottom:0;
+    width:0;
+    background:var(--accent);
+    transition:width 0.15s;
+  }
+
+  .item-content:hover:not(.matched):not(.selected) {
+    background: rgba(0,200,255,0.06);
+  }
+  .item-content:hover:not(.matched):not(.selected)::before {
+    width:3px;
+  }
+
+  .item-content.selected {
+    background: rgba(0,200,255,0.12);
+    color: #fff;
+  }
+  .item-content.selected::before {
+    width:3px;
+    background:var(--accent);
+  }
+  .item-num.selected-num {
+    color:var(--accent);
+    background:rgba(0,200,255,0.1);
+  }
+
+  .item-content.matched {
+    background: rgba(0,232,123,0.08);
+    color:var(--success);
+    cursor:default;
+    text-decoration:line-through;
+    text-decoration-color:rgba(0,232,123,0.4);
+  }
+  .item-content.matched::before {
+    width:3px;
+    background:var(--success);
+  }
+  .item-num.matched-num {
+    color:var(--success);
+    background:rgba(0,232,123,0.08);
+  }
+
+  .item-content.wrong {
+    animation: shake 0.45s;
+    background:rgba(255,59,92,0.12);
+    color:var(--danger);
+  }
+  .item-content.wrong::before {
+    width:3px;
+    background:var(--danger);
+  }
+
+  @keyframes shake {
+    0%,100%{transform:translateX(0)}
+    15%,45%,75%{transform:translateX(-8px)}
+    30%,60%,90%{transform:translateX(8px)}
+  }
+
+  /* ── CONTROLS ── */
+  .controls {
+    display:flex;
+    justify-content:center;
+    gap:16px;
+    margin-top:10px;
+  }
+  .btn {
+    padding:12px 36px;
+    border:none;
+    font-family:var(--cond);
+    font-size:15px;
+    font-weight:700;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:all 0.2s;
+    position:relative;
+    overflow:hidden;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+  }
+  .btn-primary::after {
+    content:'';
+    position:absolute;
+    inset:0;
+    background: var(--accent2);
+    transform:translateX(-100%);
+    transition:transform 0.3s;
+    z-index:0;
+  }
+  .btn-primary:hover::after { transform:translateX(0); }
+  .btn-primary span { position:relative; z-index:1; }
+  .btn-reset {
+    background: transparent;
+    color: var(--muted);
+    border:1px solid var(--border);
+  }
+  .btn-reset:hover {
+    border-color:var(--accent);
+    color:var(--accent);
+  }
+
+  /* ── RESULTS ── */
+  .results {
+    display:none;
+    padding:60px 20px;
+    text-align:center;
+    position:relative;
+  }
+  .results.active { display:block; }
+  .results-header {
+    font-family:var(--cond);
+    font-size:14px;
+    letter-spacing:4px;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-bottom:12px;
+  }
+  .results h2 {
+    font-family:var(--cond);
+    font-size:52px;
+    font-weight:800;
+    color:#fff;
+    text-transform:uppercase;
+    margin-bottom:4px;
+  }
+  .final-score {
+    font-family:var(--mono);
+    font-size:80px;
+    color:var(--accent2);
+    line-height:1;
+    margin:30px 0;
+    text-shadow: 0 0 40px rgba(0,255,208,0.3);
+  }
+  .results-table {
+    display:inline-block;
+    background:var(--surface);
+    border:1px solid var(--border);
+    min-width:340px;
+    margin-bottom:36px;
+  }
+  .result-row {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:16px 28px;
+    border-bottom:1px solid var(--border);
+    font-size:15px;
+    gap:40px;
+  }
+  .result-row:last-child { border-bottom:none; }
+  .result-row span {
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:1px;
+    white-space:nowrap;
+  }
+  .result-row strong {
+    font-family:var(--cond);
+    font-size:22px;
+    font-weight:800;
+    color:var(--accent);
+  }
+
+  /* Scanline animation on completion */
+  .scanline {
+    position:fixed; inset:0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0,200,255,0) 0px,
+      rgba(0,200,255,0) 2px,
+      rgba(0,200,255,0.015) 2px,
+      rgba(0,200,255,0.015) 4px
+    );
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:1100px){
+    .matching-grid { grid-template-columns:1fr; }
+    .content { padding:20px; }
+    .header { padding:20px; }
+    .stats-bar { flex-wrap:wrap; }
+  }
+  @media(max-width:600px){
+    .header { flex-wrap:wrap; }
+    .header-badge { margin-left:0; }
+    .item-content { font-size:12px; }
+    .final-score { font-size:56px; }
+    .results h2 { font-size:36px; }
+  }
+</style>
+</head>
+<body>
+<div class="scanline"></div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5">
+      <path d="M4 7h16M4 12h16M4 17h16"/>
+      <rect x="2" y="3" width="20" height="18"/>
+    </svg>
+  </div>
+  <div class="header-text">
+    <h1>IT Disaster <span>Recovery</span> — Matching Test</h1>
+    <p>// Risk Management · ASM · ITDR Software · Backup Strategies</p>
+  </div>
+  <div class="header-badge">Module 04</div>
+</div>
+
+<!-- INSTRUCTIONS -->
+<div class="instructions">
+  <p>Select a <strong>Term</strong> from the left column, then click its matching <strong>Definition</strong> on the right. &nbsp;
+     <strong style="color:var(--success)">Green + strikethrough</strong> = correct &nbsp;|&nbsp;
+     <strong style="color:var(--danger)">Red shake</strong> = wrong. Match all 27 pairs to complete.</p>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stat-block">
+      <div class="stat-label">Matched</div>
+      <div class="stat-value" id="matchedCount">0</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-label">Remaining</div>
+      <div class="stat-value" id="remainingCount">27</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-label">Wrong</div>
+      <div class="stat-value" id="wrongCount">0</div>
+    </div>
+    <div class="progress-container">
+      <div class="progress-label">
+        <span>Completion</span>
+        <span id="progressPct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME AREA -->
+  <div id="matchingArea">
+    <div class="matching-grid">
+      <div>
+        <div class="col-header">
+          <span>Terms</span>
+          <div class="col-tag">27 items</div>
+        </div>
+        <div class="items-list" id="termsList"></div>
+      </div>
+      <div>
+        <div class="col-header">
+          <span>Definitions</span>
+          <div class="col-tag">shuffled</div>
+        </div>
+        <div class="items-list" id="definitionsList"></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn btn-reset" onclick="resetGame()">↺ Reset</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results" id="results">
+    <div class="results-header">// Session Complete</div>
+    <h2>All Pairs Matched</h2>
+    <div class="final-score" id="finalScore">27/27</div>
+    <div class="results-table">
+      <div class="result-row">
+        <span>Correct Matches</span>
+        <strong id="correctMatches">27</strong>
+      </div>
+      <div class="result-row">
+        <span>Wrong Attempts</span>
+        <strong id="wrongAttempts" style="color:var(--danger)">0</strong>
+      </div>
+      <div class="result-row">
+        <span>Accuracy</span>
+        <strong id="accuracy" style="color:var(--accent2)">100%</strong>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="resetGame()"><span>↺ New Session</span></button>
+  </div>
+
+</div>
+
+<script>
+const data = [
+  {term:"Risk Priority",        definition:"A basic element of risk register which takes risk probability and risk analysis into account to measure the priority level of the risk — a simple number scale: 1 extremely low, 2 low, 3 medium, 4 high, and 5 extremely high."},
+  {term:"Risk Response",        definition:"A key element of risk register which records actions/response or mitigation plan that details how you plan to handle the risk to clearly identify the solution."},
+  {term:"Risk Status",          definition:"A risk register field which includes the status of the risk — open, in progress, ongoing, or closed — to help determine whether or not the risk has been handled."},
+  {term:"Disaster Recovery Plan",definition:"Often presented as a PPT for stakeholder approval, it outlines how to restore IT infrastructure, data, and security controls after a cyberattack, natural disaster, or operational outage."},
+  {term:"Business Continuity Plan",definition:"A well-prepared plan that ensures an organization can recover not only IT systems but also people, processes, and operations."},
+  {term:"Cyber Disaster",       definition:"Refers to the impact of very severe cyber risks such as ransomware, destruction of hardware servers, and data breach."},
+  {term:"Attack Surface Assessment",definition:"Shows how assets are related to each other and where the compromise of one asset essentially compromises another asset or significantly impairs the performance of another asset."},
+  {term:"Risk Identification",  definition:"An entry in the risk register which includes the risk name or ID number — helping organize company risks into categories so they are easier to locate and track."},
+  {term:"Risk Description",     definition:"An entry in the risk register which is a brief description of the risk and why it is an issue."},
+  {term:"Risk Category",        definition:"An entry in the risk register that makes it easier to understand who will be responsible for mitigation — may categorize by departments (HR, operations, IT) or by relative impact."},
+  {term:"Asset Discovery",      definition:"First step in ASM: identifying and cataloging all assets across cloud, mobile, and on-premise environments — ensuring authorized and unauthorized devices, including shadow IT, are visible. Tools like Wiz.io automate this process."},
+  {term:"Vulnerability Assessment",definition:"Second step in ASM: continuously scanning and evaluating assets for weaknesses and security gaps."},
+  {term:"Threat Intelligence Integration",definition:"A core ASM function: incorporating threat intelligence to help organizations stay ahead of emerging threats and keep ASM strategies aligned with the latest cyber threat landscape."},
+  {term:"Zero-Day Exploits",    definition:"Harmful software designed to attack applications with hidden security flaws that are unknown to the vendor."},
+  {term:"Cyber Risk Register",  definition:"A form of reporting that organizes an inventory of potential risks, logging relevant details for each — used for prioritizing and decision making."},
+  {term:"Recovery Point Objective (RPO)",definition:"The maximum amount of data loss acceptable after a disaster — beyond this threshold it becomes extremely difficult to recover data."},
+  {term:"Recovery Time Objective (RTO)",definition:"The acceptable timeframe in which a system must be recovered and restored to operation after a disaster."},
+  {term:"Veeam SW",             definition:"A top ITDR platform offering comprehensive backup, replication, and recovery for virtual, physical, and cloud environments — favored by enterprises needing fast recovery for virtualized workloads."},
+  {term:"Zerto SW",             definition:"A top ITDR platform focusing on continuous data protection and hybrid-cloud disaster recovery, ensuring minimal downtime — best for enterprises prioritizing near-zero recovery times and hybrid IT continuity."},
+  {term:"Acronis",              definition:"A top ITDR platform providing integrated backup and disaster recovery with a strong focus on cybersecurity — combining data protection with threat detection and mitigation for unified cyber resilience."},
+  {term:"Arcserve",             definition:"A top ITDR platform delivering scalable backup and recovery for hybrid and multi-cloud environments with flexible deployment options — best for enterprises needing efficient storage management."},
+  {term:"Commvault",            definition:"A top ITDR platform providing enterprise-level data protection and recovery, designed for organizations managing vast data estates across multiple environments — best for global enterprises with complex data ecosystems."},
+  {term:"Rubrik",               definition:"A platform providing automated backup, instant recovery, and ransomware protection — enabling simplified management of large-scale recovery operations for enterprises prioritizing security."},
+  {term:"Anomaly Detection",    definition:"A recent trend in data backup and recovery: analyzing backup logs in real-time to detect unusual file changes or entropy that can indicate ransomware activity."},
+  {term:"Automated Malware Scanning",definition:"A recent trend in data backup and recovery: scanning backups during the backup process to ensure clean data is restored."},
+  {term:"Kubernetes Backup",    definition:"Specialized tools for containerized, distributed applications — ensuring the entire application state is protected across all nodes."},
+  {term:"Cloud-to-Cloud Backup",definition:"Directly backing up SaaS data to a separate, secure cloud to avoid dependence on the SaaS vendor."}
+];
+
+let shuffledDefs = [];
+let correctMap   = {};           // termIndex → defIndex
+let selectedTerm = null;
+let selectedDef  = null;
+let matchedSet   = new Set();
+let wrongTotal   = 0;
+
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function initGame(){
+  shuffledDefs = shuffle([...data]);
+  correctMap   = {};
+  selectedTerm = null;
+  selectedDef  = null;
+  matchedSet   = new Set();
+  wrongTotal   = 0;
+
+  data.forEach((item,ti)=>{
+    correctMap[ti] = shuffledDefs.indexOf(item);
+  });
+
+  const tList = document.getElementById('termsList');
+  const dList = document.getElementById('definitionsList');
+  tList.innerHTML = '';
+  dList.innerHTML = '';
+
+  data.forEach((item,i)=>{
+    tList.innerHTML += `
+      <div class="item-row" id="trow-${i}">
+        <div class="item-num" id="tnum-${i}">${String(i+1).padStart(2,'0')}</div>
+        <div class="item-content" data-ti="${i}" onclick="selectTerm(${i})">${item.term}</div>
+      </div>`;
+  });
+
+  shuffledDefs.forEach((item,i)=>{
+    const letter = String.fromCharCode(65+i);
+    dList.innerHTML += `
+      <div class="item-row" id="drow-${i}">
+        <div class="item-num" id="dnum-${i}">${letter}</div>
+        <div class="item-content" data-di="${i}" onclick="selectDefinition(${i})">${item.definition}</div>
+      </div>`;
+  });
+
+  updateStats();
+}
+
+function selectTerm(ti){
+  if(matchedSet.has('t'+ti)) return;
+  const el = document.querySelector(`.item-content[data-ti="${ti}"]`);
+  const num = document.getElementById(`tnum-${ti}`);
+
+  // deselect previous
+  if(selectedTerm !== null && selectedTerm !== ti){
+    const old = document.querySelector(`.item-content[data-ti="${selectedTerm}"]`);
+    const oldN = document.getElementById(`tnum-${selectedTerm}`);
+    old.classList.remove('selected');
+    oldN.classList.remove('selected-num');
+  }
+
+  if(selectedTerm === ti){
+    el.classList.remove('selected');
+    num.classList.remove('selected-num');
+    selectedTerm = null;
+    return;
+  }
+
+  selectedTerm = ti;
+  el.classList.add('selected');
+  num.classList.add('selected-num');
+
+  if(selectedDef !== null) tryMatch(selectedTerm, selectedDef);
+}
+
+function selectDefinition(di){
+  if(matchedSet.has('d'+di)) return;
+  const el = document.querySelector(`.item-content[data-di="${di}"]`);
+  const num = document.getElementById(`dnum-${di}`);
+
+  if(selectedDef !== null && selectedDef !== di){
+    const old = document.querySelector(`.item-content[data-di="${selectedDef}"]`);
+    const oldN = document.getElementById(`dnum-${selectedDef}`);
+    old.classList.remove('selected');
+    oldN.classList.remove('selected-num');
+  }
+
+  if(selectedDef === di){
+    el.classList.remove('selected');
+    num.classList.remove('selected-num');
+    selectedDef = null;
+    return;
+  }
+
+  selectedDef = di;
+  el.classList.add('selected');
+  num.classList.add('selected-num');
+
+  if(selectedTerm !== null) tryMatch(selectedTerm, selectedDef);
+}
+
+function tryMatch(ti, di){
+  const tEl  = document.querySelector(`.item-content[data-ti="${ti}"]`);
+  const dEl  = document.querySelector(`.item-content[data-di="${di}"]`);
+  const tNum = document.getElementById(`tnum-${ti}`);
+  const dNum = document.getElementById(`dnum-${di}`);
+
+  if(correctMap[ti] === di){
+    // correct
+    [tEl, dEl].forEach(el=>{ el.classList.remove('selected','wrong'); el.classList.add('matched'); });
+    tNum.classList.remove('selected-num'); tNum.classList.add('matched-num');
+    dNum.classList.remove('selected-num'); dNum.classList.add('matched-num');
+    matchedSet.add('t'+ti); matchedSet.add('d'+di);
+    selectedTerm = null; selectedDef = null;
+    updateStats();
+    if(matchedSet.size/2 === data.length) setTimeout(()=>showResults(), 500);
+  } else {
+    // wrong
+    wrongTotal++;
+    [tEl, dEl].forEach(el=>{ el.classList.remove('selected'); el.classList.add('wrong'); });
+    tNum.classList.remove('selected-num');
+    dNum.classList.remove('selected-num');
+    setTimeout(()=>{
+      [tEl, dEl].forEach(el=>el.classList.remove('wrong'));
+    }, 500);
+    selectedTerm = null; selectedDef = null;
+    updateStats();
+  }
+}
+
+function updateStats(){
+  const matched = matchedSet.size/2;
+  const remain  = data.length - matched;
+  const pct     = Math.round((matched/data.length)*100);
+  document.getElementById('matchedCount').textContent  = matched;
+  document.getElementById('remainingCount').textContent = remain;
+  document.getElementById('wrongCount').textContent    = wrongTotal;
+  document.getElementById('progressFill').style.width  = pct+'%';
+  document.getElementById('progressPct').textContent   = pct+'%';
+}
+
+function showResults(){
+  const correct  = matchedSet.size/2;
+  const attempts = correct + wrongTotal;
+  const acc      = attempts>0 ? Math.round((correct/attempts)*100) : 100;
+  document.getElementById('matchingArea').style.display='none';
+  document.getElementById('results').classList.add('active');
+  document.getElementById('finalScore').textContent    = `${correct}/${data.length}`;
+  document.getElementById('correctMatches').textContent = correct;
+  document.getElementById('wrongAttempts').textContent = wrongTotal;
+  document.getElementById('accuracy').textContent      = acc+'%';
+}
+
+function resetGame(){
+  document.getElementById('results').classList.remove('active');
+  document.getElementById('matchingArea').style.display='block';
+  wrongTotal = 0;
+  initGame();
+}
+
+initGame();
+</script>
+</body>
+</html>

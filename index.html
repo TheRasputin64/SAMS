@@ -3,278 +3,556 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>S.A.M.S v2.7</title>
-<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<title>S.A.M.S</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
 :root{
-  --g:#00ff41;
-  --g2:#00cc35;
-  --g3:#00aa28;
-  --dim:#006620;
-  --vdim:#003310;
-  --bg:#000;
-  --dead:#aa0000;
-  --dead2:#cc0000;
-  --scan:rgba(0,255,65,0.018);
+  --bg:    #04030E;
+  --sur:   #080618;
+  --panel: #0C0924;
+  --y:     #FCE300;
+  --pk:    #FF0055;
+  --cy:    #00EFFF;
+  --dim:   #38346A;
+  --vdim:  #171435;
+  --text:  #C8C0F0;
+  --bdr:   #252048;
+  --ok:    #00FF94;
+  --dead:  #FF0055;
 }
-html{scroll-behavior:smooth;}
+
+html{scroll-behavior:smooth}
+
 body{
   font-family:'VT323',monospace;
-  background:#000;
-  color:var(--g);
-  font-size:22px;
+  background:var(--bg);
+  color:var(--text);
+  font-size:20px;
   line-height:1.6;
   min-height:100vh;
   overflow-x:hidden;
 }
+
+/* Subtle scanlines — low opacity so not eye-straining */
 body::before{
   content:'';position:fixed;inset:0;
-  background:repeating-linear-gradient(0deg,transparent,transparent 3px,var(--scan) 3px,var(--scan) 4px);
-  pointer-events:none;z-index:9997;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.12) 3px,rgba(0,0,0,.12) 4px);
+  pointer-events:none;z-index:9001;
 }
+
+/* Vignette */
 body::after{
   content:'';position:fixed;inset:0;
-  background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.65) 100%);
-  pointer-events:none;z-index:9996;
+  background:radial-gradient(ellipse at 50% 40%,transparent 45%,rgba(0,0,0,.75) 100%);
+  pointer-events:none;z-index:9000;
 }
-@keyframes flicker{0%,92%,94%,96%,100%{opacity:1}93%{opacity:.95}95%{opacity:.97}}
-body{animation:flicker 9s infinite;}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-.blink{animation:blink 1s step-end infinite;}
 
-/* ═══ GLITCH INTRO ═══ */
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.blink{animation:blink 1s step-end infinite}
+
+/* ══════════════════════════════════════════
+   INTRO
+══════════════════════════════════════════ */
 #intro{
   position:fixed;inset:0;z-index:9999;
-  background:#000;
+  background:var(--bg);
   display:flex;align-items:center;justify-content:center;
-  flex-direction:column;gap:0;
+  flex-direction:column;gap:16px;
   overflow:hidden;
 }
-#intro.done{display:none;}
+#intro.gone{display:none}
 
-.intro-bars{
-  position:absolute;inset:0;
-  display:flex;flex-direction:column;
+/* The scan beam that sweeps top→bottom on load */
+#beam{
+  position:absolute;left:0;right:0;top:-4px;
+  height:3px;
+  background:linear-gradient(90deg,transparent 0%,var(--cy) 20%,var(--y) 50%,var(--cy) 80%,transparent 100%);
+  box-shadow:0 0 18px var(--cy),0 0 40px rgba(0,240,255,0.45),0 0 80px rgba(252,227,0,0.2);
+  animation:beam 0.9s cubic-bezier(0.2,0,0.5,1) 0.15s forwards;
 }
-.ibar{
-  flex:1;
-  background:var(--g);
-  transform:scaleX(0);
-  will-change:transform;
+@keyframes beam{
+  0%  {top:-4px;opacity:1}
+  85% {opacity:1}
+  100%{top:100vh;opacity:0}
 }
 
-.intro-msg{
-  position:relative;z-index:10;
-  font-size:clamp(28px,6vw,72px);
-  letter-spacing:8px;
-  text-align:center;
-  color:var(--g);
+/* Intro title wrapper */
+#itw{
+  position:relative;
   opacity:0;
-  padding:0 20px;
-  line-height:1.2;
+  animation:fadein 0.05s forwards 0.85s;
+}
+@keyframes fadein{to{opacity:1}}
+
+/* Main intro title */
+#ititle{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(64px,14vw,148px);
+  font-weight:900;
+  letter-spacing:0.22em;
+  color:var(--y);
+  position:relative;
+  line-height:1;
+  display:block;
 }
 
-/* ═══ PAGE TRANSITION ═══ */
+/* RED channel — chromatic aberration ghost */
+#ititle::before{
+  content:attr(data-t);
+  position:absolute;top:0;left:0;
+  color:var(--pk);
+  opacity:0;
+  mix-blend-mode:screen;
+  animation:rgb-r 1.1s steps(1) 1.05s both;
+}
+/* CYAN channel */
+#ititle::after{
+  content:attr(data-t);
+  position:absolute;top:0;left:0;
+  color:var(--cy);
+  opacity:0;
+  mix-blend-mode:screen;
+  animation:rgb-b 1.1s steps(1) 1.05s both;
+}
+
+@keyframes rgb-r{
+  0%  {opacity:0}
+  6%  {opacity:.9;transform:translate(-8px,0);  clip-path:polygon(0 8%,100% 8%,100% 30%,0 30%)}
+  14% {transform:translate(-11px,1px);           clip-path:polygon(0 55%,100% 55%,100% 78%,0 78%)}
+  22% {transform:translate(-6px,-1px);           clip-path:polygon(0 20%,100% 20%,100% 45%,0 45%)}
+  30% {transform:translate(-9px,0);              clip-path:polygon(0 70%,100% 70%,100% 92%,0 92%)}
+  40% {transform:translate(-7px,2px);            clip-path:polygon(0 0%,100% 0%,100% 18%,0 18%)}
+  52% {transform:translate(-5px,0);              clip-path:polygon(0 40%,100% 40%,100% 65%,0 65%)}
+  65% {opacity:.9}
+  80% {opacity:.4}
+  100%{opacity:0;transform:translate(0,0)}
+}
+@keyframes rgb-b{
+  0%  {opacity:0}
+  6%  {opacity:.9;transform:translate(8px,0);   clip-path:polygon(0 42%,100% 42%,100% 68%,0 68%)}
+  14% {transform:translate(11px,-1px);           clip-path:polygon(0 5%,100% 5%,100% 28%,0 28%)}
+  22% {transform:translate(6px,1px);             clip-path:polygon(0 62%,100% 62%,100% 87%,0 87%)}
+  30% {transform:translate(9px,0);               clip-path:polygon(0 15%,100% 15%,100% 38%,0 38%)}
+  40% {transform:translate(7px,-2px);            clip-path:polygon(0 75%,100% 75%,100% 100%,0 100%)}
+  52% {transform:translate(5px,0);               clip-path:polygon(0 30%,100% 30%,100% 55%,0 55%)}
+  65% {opacity:.9}
+  80% {opacity:.4}
+  100%{opacity:0;transform:translate(0,0)}
+}
+
+/* Tear lines container */
+#tears{position:absolute;inset:0;pointer-events:none}
+.tear{
+  position:absolute;left:0;right:0;height:2px;
+  opacity:0;transform:translateX(0);
+}
+
+/* Boot lines */
+#iboot{
+  font-size:clamp(12px,1.8vw,17px);
+  color:var(--dim);
+  letter-spacing:3px;
+  text-align:center;
+  min-height:4.5em;
+  opacity:0;
+  animation:fadein 0.05s forwards 0.9s;
+  display:flex;flex-direction:column;gap:2px;
+  align-items:center;
+}
+.bline{
+  opacity:0;
+  transition:opacity 0.05s;
+}
+.bline.ok::after {content:' // OK';color:var(--ok)}
+.bline.err::after{content:' // NULL';color:var(--pk)}
+.bline.warn::after{content:' // ???';color:var(--y)}
+
+/* Intro accent line */
+#iacc{
+  width:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--y),var(--cy),transparent);
+  box-shadow:0 0 8px var(--cy);
+  opacity:0;
+  animation:acc-in 0.6s ease 1.0s forwards;
+}
+@keyframes acc-in{0%{opacity:0;width:0}100%{opacity:1;width:min(600px,80vw)}}
+
+/* Intro exit: the screen "tears apart" into horizontal strips that slide away */
+.exit-strip{
+  position:absolute;left:0;right:0;
+  background:var(--bg);
+  transform:scaleX(0);
+}
+
+/* ══════════════════════════════════════════
+   PAGE TRANSITION (venetian glitch)
+══════════════════════════════════════════ */
 #ptrans{
   position:fixed;inset:0;z-index:99999;
+  pointer-events:none;
   display:flex;flex-direction:column;
-  pointer-events:none;overflow:hidden;
+  overflow:hidden;
 }
-#ptrans.active{pointer-events:all;}
-.pt{flex:1;transform:scaleX(0);}
+#ptrans.active{pointer-events:all}
+.ps{flex:1;transform:scaleX(0)}
 
-/* ═══ MAIN ═══ */
-#main{
-  display:none;
-  max-width:1160px;
-  margin:0 auto;
-  padding:32px 28px 60px;
+/* ══════════════════════════════════════════
+   EXAM ALERT
+══════════════════════════════════════════ */
+#exam{
+  position:fixed;inset:0;z-index:9998;
+  background:rgba(4,3,14,0.88);
+  backdrop-filter:blur(6px);
+  display:none;align-items:center;justify-content:center;
 }
-#main.on{display:block;}
+#exam.on{display:flex}
 
-/* ═══ HEADER ═══ */
+.ea{
+  border:2px solid var(--pk);
+  background:var(--sur);
+  max-width:480px;width:90%;
+  position:relative;overflow:hidden;
+  box-shadow:0 0 60px rgba(255,0,85,0.25),inset 0 0 30px rgba(255,0,85,0.04);
+  animation:ea-in 0.3s steps(3) forwards;
+}
+@keyframes ea-in{from{transform:scale(0.9) translateY(20px);opacity:0}to{transform:none;opacity:1}}
+
+/* Animated top border glow */
+.ea::before{
+  content:'';position:absolute;top:0;left:-100%;right:-100%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--pk),var(--y),var(--pk),transparent);
+  animation:border-scan 2s linear infinite;
+}
+@keyframes border-scan{from{left:-100%}to{left:100%}}
+
+.ea-top{
+  background:var(--pk);
+  color:#000;
+  padding:10px 18px;
+  font-size:15px;letter-spacing:4px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.ea-top span:last-child{opacity:0.7;font-size:12px}
+
+.ea-body{padding:28px 24px;text-align:center;line-height:2}
+
+.ea-time{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(36px,8vw,60px);
+  font-weight:900;
+  color:var(--y);
+  text-shadow:0 0 30px rgba(252,227,0,0.5);
+  display:block;
+  animation:blink 1.2s step-end infinite;
+  margin:4px 0 12px;
+}
+.ea-l1{color:var(--text);font-size:18px;letter-spacing:2px;display:block}
+.ea-l2{color:var(--pk);font-size:22px;letter-spacing:1px;display:block;margin-top:4px}
+.ea-l3{color:var(--dim);font-size:14px;letter-spacing:2px;display:block;margin-top:6px}
+
+.ea-btns{display:flex;border-top:1px solid var(--bdr)}
+.ea-btn{
+  flex:1;padding:14px;
+  background:transparent;color:var(--text);
+  border:none;border-right:1px solid var(--bdr);
+  font-family:'VT323',monospace;font-size:17px;letter-spacing:3px;
+  cursor:pointer;transition:background 0.1s,color 0.1s;
+  text-transform:uppercase;
+}
+.ea-btn:last-child{border-right:none}
+.ea-btn:hover{background:var(--vdim)}
+.ea-btn.panic{color:var(--pk)}
+.ea-btn.panic:hover{background:var(--pk);color:#000}
+
+/* ══════════════════════════════════════════
+   MAIN CONTENT
+══════════════════════════════════════════ */
+#main{display:none;max-width:1160px;margin:0 auto;padding:32px 28px 60px}
+#main.on{display:block}
+
+/* HEADER */
 .hdr{
   text-align:center;
-  padding:28px 0 18px;
-  border-bottom:2px solid var(--g);
+  padding:28px 0 20px;
   margin-bottom:20px;
+  position:relative;
 }
+.hdr::after{
+  content:'';
+  position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--y) 20%,var(--cy) 50%,var(--y) 80%,transparent);
+  box-shadow:0 0 10px rgba(252,227,0,0.3);
+}
+
 .hdr h1{
-  font-size:clamp(56px,11vw,100px);
-  letter-spacing:16px;
-  color:var(--g);
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(48px,10vw,100px);
+  font-weight:900;
+  letter-spacing:0.22em;
+  color:var(--y);
   line-height:1;
-  text-shadow:0 0 20px rgba(0,255,65,.4);
+  position:relative;
+  display:inline-block;
 }
-@keyframes titleglitch{
-  0%,85%,100%{transform:none;text-shadow:0 0 20px rgba(0,255,65,.4)}
-  86%{transform:skewX(-4deg) translateX(-3px);text-shadow:-5px 0 #f00,4px 0 #0ff,0 0 20px rgba(0,255,65,.4)}
-  87%{transform:skewX(3deg) translateX(3px);text-shadow:4px 0 #f00,-5px 0 #0ff}
-  88%{transform:none;text-shadow:0 0 20px rgba(0,255,65,.4)}
-  92%{transform:skewX(-1deg);text-shadow:3px 0 #0ff}
-  93%{transform:none}
+
+/* Ongoing periodic glitch on main title — subtle and not eye-straining */
+@keyframes hglitch{
+  0%,82%,100%{text-shadow:0 0 25px rgba(252,227,0,0.25);transform:none}
+  83%{text-shadow:-5px 0 var(--pk),5px 0 var(--cy),0 0 25px rgba(252,227,0,0.25);transform:skewX(-1.5deg)}
+  84%{text-shadow:6px 0 var(--pk),-6px 0 var(--cy);transform:translateX(2px)}
+  85%{text-shadow:-3px 0 var(--cy);transform:none}
+  86%{text-shadow:none}
+  90%{text-shadow:3px 0 var(--pk);transform:skewX(0.5deg)}
+  91%{text-shadow:none;transform:none}
 }
-.hdr h1{animation:titleglitch 5s infinite;}
+.hdr h1{animation:hglitch 7s infinite}
 
-.hdr-sub{font-size:clamp(15px,2.8vw,22px);color:var(--dim);letter-spacing:6px;margin-top:8px;}
-.hdr-gpa{font-size:clamp(18px,3.5vw,28px);color:var(--dead2);letter-spacing:4px;margin-top:10px;}
+.hdr-sub{
+  font-family:'VT323',monospace;
+  font-size:clamp(11px,1.8vw,17px);
+  color:var(--dim);letter-spacing:6px;margin-top:10px;
+  text-transform:uppercase;
+}
+.hdr-gpa{
+  font-family:'VT323',monospace;
+  font-size:clamp(13px,2.2vw,20px);
+  color:var(--pk);letter-spacing:4px;margin-top:8px;
+}
 
-/* ═══ LOC ═══ */
+/* LOC BAR */
 #loc{
-  border:1px solid var(--dim);
+  border:1px solid var(--bdr);
+  border-left:3px solid var(--cy);
   margin:0 0 20px;
-  padding:12px 18px;
-  font-size:clamp(15px,2.5vw,20px);
-  color:var(--g2);
-  min-height:46px;
-  display:flex;align-items:center;
-  gap:10px;
+  padding:11px 18px;
+  font-size:clamp(12px,1.8vw,17px);
+  color:var(--cy);
+  min-height:42px;
+  display:flex;align-items:center;gap:10px;
+  background:rgba(0,240,255,0.025);
 }
-#loc .lp{color:var(--dim);flex-shrink:0;}
+#loc .lp{color:var(--dim);flex-shrink:0}
 
-/* ═══ DIVIDER ═══ */
-.div{border:none;border-top:1px solid var(--vdim);margin:24px 0;}
-.div-b{border-top:2px solid var(--g);}
+/* DIVIDERS */
+.div{border:none;border-top:1px solid var(--vdim);margin:22px 0}
+.div-b{border-top:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--bdr),transparent);
+  margin:22px 0;
+}
 
-/* ═══ TERM BLOCK ═══ */
-.term{margin:28px 0;}
+/* TERM BLOCKS */
+.term{margin:26px 0}
+
 .term-hdr{
   display:flex;align-items:center;gap:14px;
-  cursor:pointer;padding:12px 0;
-  border-bottom:2px solid var(--g);
-  user-select:none;-webkit-tap-highlight-color:transparent;
+  cursor:pointer;
+  padding:12px 2px;
+  position:relative;
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
 }
-.term-hdr:hover .thl{color:#fff;}
-.thl{font-size:clamp(22px,4.5vw,38px);letter-spacing:4px;flex:1;transition:color .12s;}
-.thb{font-size:clamp(13px,2vw,17px);color:var(--dim);letter-spacing:2px;white-space:nowrap;}
-.tha{font-size:28px;color:var(--g3);transition:transform .3s cubic-bezier(.4,0,.2,1);flex-shrink:0;}
-.term.col .tha{transform:rotate(-90deg);}
-.term-body{overflow:hidden;max-height:5000px;transition:max-height .5s cubic-bezier(.4,0,.2,1),opacity .3s;opacity:1;}
-.term.col .term-body{max-height:0;opacity:0;}
+/* Animated underline */
+.term-hdr::after{
+  content:'';
+  position:absolute;bottom:0;left:0;
+  height:1px;width:0;
+  background:linear-gradient(90deg,var(--y),var(--cy));
+  transition:width 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.term-hdr:hover::after,.term-hdr:focus::after{width:100%}
 
-/* ═══ SECTION LABEL ═══ */
+/* Static top line */
+.term-hdr::before{
+  content:'';
+  position:absolute;bottom:0;left:0;right:0;
+  height:1px;background:var(--bdr);
+}
+
+.thl{
+  font-family:'VT323',monospace;
+  font-size:clamp(20px,4vw,34px);
+  letter-spacing:4px;flex:1;
+  color:var(--text);
+  transition:color 0.15s;
+}
+.term-hdr:hover .thl{color:var(--y)}
+
+.thb{
+  font-family:'VT323',monospace;
+  font-size:clamp(11px,1.6vw,15px);
+  color:var(--dim);letter-spacing:2px;white-space:nowrap;
+}
+.tha{
+  font-size:22px;color:var(--y);
+  transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  flex-shrink:0;
+}
+.term.col .tha{transform:rotate(-90deg)}
+
+.term-body{
+  overflow:hidden;
+  max-height:5000px;
+  transition:max-height 0.5s cubic-bezier(0.4,0,0.2,1),opacity 0.3s;
+  opacity:1;
+}
+.term.col .term-body{max-height:0;opacity:0}
+
+/* SECTION LABEL */
 .slabel{
-  font-size:clamp(14px,2.2vw,19px);
+  font-family:'VT323',monospace;
+  font-size:clamp(12px,1.8vw,16px);
   color:var(--dim);
   letter-spacing:4px;
-  margin:22px 0 10px;
+  margin:20px 0 10px;
   padding:0 0 4px 12px;
-  border-left:3px solid var(--dim);
+  border-left:2px solid var(--y);
 }
-.slabel.red{color:var(--dead);border-color:var(--dead);}
+.slabel.red{color:var(--pk);border-color:var(--pk)}
 
-/* ═══ TABLE ═══ */
-table{width:100%;border-collapse:collapse;border:1px solid var(--dim);margin-bottom:8px;}
-thead{border-bottom:2px solid var(--g3);}
+/* TABLE */
+table{width:100%;border-collapse:collapse;border:1px solid var(--bdr);margin-bottom:8px}
+thead{border-bottom:1px solid var(--bdr)}
 th{
-  background:var(--vdim);color:var(--g3);
-  font-size:clamp(13px,2vw,18px);
+  background:var(--panel);
+  color:var(--y);
+  font-family:'VT323',monospace;
+  font-size:clamp(11px,1.6vw,15px);
   padding:12px 14px;text-align:left;
   letter-spacing:3px;font-weight:normal;white-space:nowrap;
 }
 td{
-  font-size:clamp(14px,2.2vw,19px);
-  padding:12px 14px;
+  font-family:'VT323',monospace;
+  font-size:clamp(13px,1.9vw,18px);
+  padding:11px 14px;
   border-bottom:1px solid var(--vdim);
   vertical-align:middle;
 }
-tr:last-child td{border-bottom:none;}
-tbody tr:hover td{background:rgba(0,255,65,.05);}
-.tdc{color:var(--dim);font-size:clamp(12px,1.8vw,15px);white-space:nowrap;}
-.tdn{font-size:clamp(14px,2.2vw,19px);}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:rgba(252,227,0,0.025)}
 
-/* ═══ NOTE ═══ */
+.tdc{color:var(--dim);font-size:clamp(10px,1.4vw,13px);white-space:nowrap;font-family:'Orbitron',sans-serif;font-weight:700;letter-spacing:1px}
+
 .note{
-  font-size:clamp(12px,1.8vw,15px);
-  color:var(--dead);
-  letter-spacing:1px;
-  display:block;
-  margin-top:3px;
-  opacity:.85;
+  font-family:'VT323',monospace;
+  font-size:clamp(11px,1.5vw,14px);
+  color:var(--pk);letter-spacing:1px;
+  display:block;margin-top:3px;opacity:.82;
 }
 
-/* ═══ BUTTONS ═══ */
-.btns{display:flex;flex-wrap:wrap;gap:6px;}
+/* BUTTONS */
+.btns{display:flex;flex-wrap:wrap;gap:6px}
+
 .btn{
   display:inline-block;
   padding:5px 16px;
-  border:1px solid var(--g);
-  background:#000;color:var(--g);
+  border:1px solid var(--y);
+  background:transparent;
+  color:var(--y);
   cursor:pointer;
   font-family:'VT323',monospace;
-  font-size:clamp(14px,2vw,18px);
-  text-decoration:none;letter-spacing:2px;white-space:nowrap;
-  transition:background .07s,color .07s,border-color .07s;
-  -webkit-tap-highlight-color:transparent;
+  font-size:clamp(13px,1.7vw,16px);
+  text-decoration:none;
+  letter-spacing:2px;
+  white-space:nowrap;
+  transition:background 0.1s,color 0.1s,box-shadow 0.1s;
+  text-transform:uppercase;
 }
-.btn:hover{background:var(--g);color:#000;}
+.btn:hover{
+  background:var(--y);
+  color:#000;
+  box-shadow:0 0 16px rgba(252,227,0,0.35);
+}
+
 .btn-off{
   border-color:var(--vdim);color:var(--vdim);
   cursor:default;pointer-events:none;
 }
-.btn-dead{
-  border-color:var(--dead);color:var(--dead);
-  cursor:default;pointer-events:none;
-  letter-spacing:1px;
-}
+.btn-off:hover{background:transparent;color:var(--vdim);box-shadow:none}
 
-/* ═══ STATUS BAR ═══ */
+.btn-dead{
+  border-color:var(--pk);color:var(--pk);
+  cursor:default;pointer-events:none;letter-spacing:1px;font-size:13px;
+}
+.btn-dead:hover{background:transparent;color:var(--pk);box-shadow:none}
+
+/* STATUS BAR */
 .sbar{
   display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
   padding:14px 0 0;
   color:var(--dim);
-  font-size:clamp(13px,2vw,18px);
+  font-family:'VT323',monospace;
+  font-size:clamp(11px,1.7vw,16px);
+  margin-top:28px;letter-spacing:2px;
   border-top:1px solid var(--vdim);
-  margin-top:28px;
-  letter-spacing:2px;
 }
+.sbar span{white-space:nowrap}
 
-@media(max-width:600px){
-  th:first-child,td:first-child{display:none;}
-  .hdr h1{letter-spacing:8px;}
-  #main{padding:20px 14px 40px;}
+@media(max-width:640px){
+  th:first-child,td:first-child{display:none}
+  .hdr h1{letter-spacing:6px}
+  #main{padding:20px 14px 40px}
+  .btn{font-size:13px;padding:4px 10px}
 }
-@media(max-width:400px){
-  .tdn{font-size:13px;}
-  .btn{font-size:13px;padding:4px 10px;}
+@media(max-width:380px){
+  .btn{font-size:12px;padding:3px 8px}
+  .hdr h1{font-size:42px;letter-spacing:4px}
 }
 </style>
 </head>
 <body>
 
-<!-- PAGE TRANSITION -->
-<div id="ptrans">
-  <div class="pt" style="background:#00ff41"></div>
-  <div class="pt" style="background:#000"></div>
-  <div class="pt" style="background:#00ff41"></div>
-  <div class="pt" style="background:#000"></div>
-  <div class="pt" style="background:#00ff41"></div>
-  <div class="pt" style="background:#000"></div>
-  <div class="pt" style="background:#00ff41"></div>
-  <div class="pt" style="background:#000"></div>
-  <div class="pt" style="background:#00ff41"></div>
-  <div class="pt" style="background:#000"></div>
+<!-- ══ EXAM ALERT ══ -->
+<div id="exam">
+  <div class="ea">
+    <div class="ea-top">
+      <span>⚠ CRITICAL ALERT — EXAM WINDOW</span>
+      <span>PRIORITY: MAXIMUM</span>
+    </div>
+    <div class="ea-body">
+      <span class="ea-time" id="ea-t">13:30</span>
+      <span class="ea-l1">EXAM WINDOW DETECTED.</span>
+      <span class="ea-l1">YOU ARE NOT READY.</span>
+      <span class="ea-l2">WE KNOW. YOUR PROFESSOR KNOWS.</span>
+      <span class="ea-l2">EVEN GOD SWITCHED TABS.</span>
+      <span class="ea-l3">// Please close your eyes and open the textbook.</span>
+    </div>
+    <div class="ea-btns">
+      <button class="ea-btn" onclick="closeAlert()">[ CLOSE EYES ]</button>
+      <button class="ea-btn panic" onclick="closeAlert()">[ PANIC MODE ]</button>
+    </div>
+  </div>
 </div>
 
-<!-- INTRO -->
+<!-- ══ PAGE TRANSITION ══ -->
+<div id="ptrans"></div>
+
+<!-- ══ INTRO ══ -->
 <div id="intro">
-  <div class="intro-bars" id="ibars"></div>
-  <div class="intro-msg" id="imsg"></div>
+  <div id="beam"></div>
+  <div id="tears"></div>
+
+  <div id="itw">
+    <span id="ititle" data-t="S.A.M.S">S.A.M.S</span>
+  </div>
+
+  <div id="iacc"></div>
+  <div id="iboot"></div>
 </div>
 
-<!-- MAIN -->
+<!-- ══ MAIN ══ -->
 <div id="main">
 
   <div class="hdr">
     <h1>S.A.M.S</h1>
-    <div class="hdr-sub">STUDENT ACCESS &amp; MANAGEMENT SYSTEM</div>
-    <div class="hdr-gpa">CAN'T FIX YOUR GPA.</div>
+    <div class="hdr-sub">Student Access &amp; Management System</div>
+    <div class="hdr-gpa">Can't fix your GPA.</div>
   </div>
 
   <div id="loc"><span class="lp">&gt;</span><span id="loctext">LOCATING<span class="blink">█</span></span></div>
 
-  <hr class="div div-b">
+  <div class="div-b"></div>
 
   <!-- TERM 1 -->
   <div class="term" id="t1">
@@ -291,7 +569,7 @@ tbody tr:hover td{background:rgba(0,255,65,.05);}
         <tbody>
           <tr>
             <td class="tdc">CW</td>
-            <td class="tdn">CYBER WARFARE</td>
+            <td>CYBER WARFARE</td>
             <td><div class="btns">
               <a href="Courses/CW/match" class="btn">MATCH</a>
               <a href="Courses/CW/mcq" class="btn">MCQ</a>
@@ -299,7 +577,7 @@ tbody tr:hover td{background:rgba(0,255,65,.05);}
           </tr>
           <tr>
             <td class="tdc">SP</td>
-            <td class="tdn">SECURITY POLICIES</td>
+            <td>SECURITY POLICIES</td>
             <td><div class="btns">
               <a href="Courses/SP/match" class="btn">MATCH</a>
               <a href="Courses/SP/mcq" class="btn">MCQ</a>
@@ -307,21 +585,21 @@ tbody tr:hover td{background:rgba(0,255,65,.05);}
           </tr>
           <tr>
             <td class="tdc">CT</td>
-            <td class="tdn">ANALYTIC THINKING</td>
+            <td>ANALYTIC THINKING</td>
             <td><div class="btns">
               <span class="btn btn-off">OFFLINE</span>
             </div></td>
           </tr>
           <tr>
             <td class="tdc">SAS</td>
-            <td class="tdn">SOFTWARE SECURITY</td>
+            <td>SOFTWARE SECURITY</td>
             <td><div class="btns">
               <a href="Courses/SA/mcq" class="btn">MCQ</a>
             </div></td>
           </tr>
           <tr>
             <td class="tdc">VIC</td>
-            <td class="tdn">VISION COMPUTING</td>
+            <td>VISION COMPUTING</td>
             <td><div class="btns">
               <a href="Courses/AI/match" class="btn">MATCH</a>
               <a href="Courses/AI/mcq" class="btn">MCQ</a>
@@ -329,7 +607,7 @@ tbody tr:hover td{background:rgba(0,255,65,.05);}
           </tr>
           <tr>
             <td class="tdc">IOT</td>
-            <td class="tdn">IOT TECHNOLOGIES</td>
+            <td>IOT TECHNOLOGIES</td>
             <td><div class="btns">
               <a href="Courses/IOT/match" class="btn">MATCH</a>
               <a href="Courses/IOT/mcq" class="btn">MCQ</a>
@@ -344,7 +622,7 @@ tbody tr:hover td{background:rgba(0,255,65,.05);}
         <tbody>
           <tr>
             <td class="tdc">IOT</td>
-            <td class="tdn">IOT TECHNOLOGIES</td>
+            <td>IOT TECHNOLOGIES</td>
             <td><div class="btns">
               <a href="Courses/Final/IOT/match" class="btn">MATCH</a>
               <a href="Courses/Final/IOT/mcq" class="btn">MCQ</a>
@@ -352,7 +630,7 @@ tbody tr:hover td{background:rgba(0,255,65,.05);}
           </tr>
           <tr>
             <td class="tdc">SP</td>
-            <td class="tdn">SECURITY POLICIES</td>
+            <td>SECURITY POLICIES</td>
             <td><div class="btns">
               <a href="Courses/Final/SP/match" class="btn">MATCH</a>
               <a href="Courses/Final/SP/mcq" class="btn">MCQ</a>
@@ -360,7 +638,7 @@ tbody tr:hover td{background:rgba(0,255,65,.05);}
           </tr>
           <tr>
             <td class="tdc">VIC</td>
-            <td class="tdn">VISION COMPUTING</td>
+            <td>VISION COMPUTING</td>
             <td><div class="btns">
               <a href="Courses/Final/AI/match" class="btn">MATCH</a>
               <a href="Courses/Final/AI/mcq" class="btn">MCQ</a>
@@ -368,21 +646,21 @@ tbody tr:hover td{background:rgba(0,255,65,.05);}
           </tr>
           <tr>
             <td class="tdc">CT</td>
-            <td class="tdn">ANALYTIC THINKING</td>
+            <td>ANALYTIC THINKING</td>
             <td><div class="btns">
               <a href="Courses/Final/CT/quiz" class="btn">T &amp; F</a>
             </div></td>
           </tr>
           <tr>
             <td class="tdc">SAS</td>
-            <td class="tdn">SOFTWARE SECURITY</td>
+            <td>SOFTWARE SECURITY</td>
             <td><div class="btns">
               <span class="btn btn-dead">NOTHING WE CAN DO.</span>
             </div></td>
           </tr>
           <tr>
             <td class="tdc">CW</td>
-            <td class="tdn">CYBER WARFARE</td>
+            <td>CYBER WARFARE</td>
             <td><div class="btns">
               <a href="Courses/Final/CW/match" class="btn">MATCH</a>
               <a href="Courses/Final/CW/mcq" class="btn">MCQ</a>
@@ -394,7 +672,7 @@ tbody tr:hover td{background:rgba(0,255,65,.05);}
     </div>
   </div>
 
-  <hr class="div">
+  <div class="div"></div>
 
   <!-- TERM 2 -->
   <div class="term" id="t2">
@@ -411,9 +689,8 @@ tbody tr:hover td{background:rgba(0,255,65,.05);}
         <tbody>
           <tr>
             <td class="tdc">DM</td>
-            <td class="tdn">
-              FUNDAMENTALS OF DATA MINING
-              <span class="note">⚠ DELAYED — WEATHER CONDITIONS. Wish it’d stay delayed forever.</span>
+            <td>FUNDAMENTALS OF DATA MINING
+              <span class="note">⚠ DELAYED — WEATHER CONDITIONS. Wish it'd stay delayed forever.</span>
             </td>
             <td><div class="btns">
               <a href="Courses/Mid_Data.html" class="btn">REVISION</a>
@@ -421,7 +698,7 @@ tbody tr:hover td{background:rgba(0,255,65,.05);}
           </tr>
           <tr>
             <td class="tdc">DRR</td>
-            <td class="tdn">DISASTER RECOVERY &amp; RISK MGMT</td>
+            <td>DISASTER RECOVERY &amp; RISK MGMT</td>
             <td><div class="btns">
               <a href="Courses/Mid/DRR/match" class="btn">MATCH</a>
               <a href="Courses/Mid/DRR/mcq" class="btn">MCQ</a>
@@ -429,31 +706,23 @@ tbody tr:hover td{background:rgba(0,255,65,.05);}
           </tr>
           <tr>
             <td class="tdc">HR</td>
-            <td class="tdn">HUMAN RIGHTS</td>
-            <td><div class="btns">
-              <span class="btn btn-off">PENDING</span>
-            </div></td>
+            <td>HUMAN RIGHTS</td>
+            <td><div class="btns"><span class="btn btn-off">PENDING</span></div></td>
           </tr>
           <tr>
             <td class="tdc">CCS</td>
-            <td class="tdn">CLOUD COMPUTING SECURITY</td>
-            <td><div class="btns">
-              <span class="btn btn-off">PENDING</span>
-            </div></td>
+            <td>CLOUD COMPUTING SECURITY</td>
+            <td><div class="btns"><span class="btn btn-off">PENDING</span></div></td>
           </tr>
           <tr>
             <td class="tdc">PEF</td>
-            <td class="tdn">ECONOMICS &amp; FEASIBILITY</td>
-            <td><div class="btns">
-              <span class="btn btn-off">PENDING</span>
-            </div></td>
+            <td>ECONOMICS &amp; FEASIBILITY</td>
+            <td><div class="btns"><span class="btn btn-off">PENDING</span></div></td>
           </tr>
           <tr>
             <td class="tdc">DIG</td>
-            <td class="tdn">DIGITAL MARKETING</td>
-            <td><div class="btns">
-              <span class="btn btn-off">PENDING</span>
-            </div></td>
+            <td>DIGITAL MARKETING</td>
+            <td><div class="btns"><span class="btn btn-off">PENDING</span></div></td>
           </tr>
         </tbody>
       </table>
@@ -473,186 +742,313 @@ tbody tr:hover td{background:rgba(0,255,65,.05);}
 </div><!-- /main -->
 
 <script>
-/* ═══════════════════════════════════
-   GLITCH INTRO — 1 second full page
-═══════════════════════════════════ */
-const MSGS = [
-  "SYSTEM BREACH",
-  "LOADING DESPAIR",
-  "GPA NOT FOUND",
-  "YOU ARE COOKED",
-  "GOOD LUCK LOL",
+/* ══════════════════════════════════════════
+   SCRAMBLE UTILITY
+══════════════════════════════════════════ */
+const SC = '!@#$%&*<>?/|[]{}▓▒░█01XZ';
+
+function scramble(el, target, ms, done) {
+  const chars = [...target];
+  const frames = Math.ceil(ms / 16);
+  let f = 0;
+  const tick = () => {
+    const p = f / frames;
+    el.textContent = chars.map((c, i) => {
+      if (c === ' ' || c === '.') return c;
+      return (i / chars.length) < p
+        ? c
+        : SC[Math.floor(Math.random() * SC.length)];
+    }).join('');
+    if (f < frames) { f++; requestAnimationFrame(tick); }
+    else { el.textContent = target; done && done(); }
+  };
+  requestAnimationFrame(tick);
+}
+
+/* ══════════════════════════════════════════
+   TEAR LINE SYSTEM
+══════════════════════════════════════════ */
+const TEAR_YS = [11, 24, 38, 53, 67, 81, 92];
+const TEAR_COLORS = ['var(--y)', 'var(--cy)', 'var(--pk)', 'var(--cy)', 'var(--y)', 'var(--pk)', 'var(--cy)'];
+
+function buildTears() {
+  const container = document.getElementById('tears');
+  TEAR_YS.forEach((y, i) => {
+    const d = document.createElement('div');
+    d.className = 'tear';
+    d.style.cssText = `top:${y}%;background:${TEAR_COLORS[i]};height:${1 + Math.random() * 2}px`;
+    container.appendChild(d);
+  });
+}
+
+function flashTears(iterations = 8) {
+  const tears = [...document.querySelectorAll('.tear')];
+  let count = 0;
+  const step = () => {
+    if (count >= iterations) {
+      tears.forEach(t => { t.style.opacity = '0'; t.style.transform = ''; });
+      return;
+    }
+    tears.forEach(t => {
+      const show = Math.random() > 0.45;
+      t.style.opacity = show ? String(0.6 + Math.random() * 0.4) : '0';
+      t.style.transform = show ? `translateX(${(Math.random() - 0.5) * 24}px)` : '';
+      t.style.height = show ? `${1 + Math.random() * 3}px` : '2px';
+    });
+    count++;
+    setTimeout(step, 65 + Math.random() * 40);
+  };
+  step();
+}
+
+/* ══════════════════════════════════════════
+   INTRO SEQUENCE
+══════════════════════════════════════════ */
+const BOOT_LINES = [
+  { t: 'NEURAL LINK ESTABLISHED',     c: 'ok'  },
+  { t: 'ACADEMIC RECORDS INDEXED',    c: 'ok'  },
+  { t: 'GPA RETRIEVAL: ████████',     c: 'err' },
+  { t: 'HOPE RESERVES: CRITICALLY LOW', c: 'warn' },
 ];
 
-(function buildIntro(){
-  const bars = document.getElementById('ibars');
-  const N = 14;
-  for(let i=0;i<N;i++){
-    const d=document.createElement('div');
-    d.className='ibar';
-    bars.appendChild(d);
-  }
-})();
+const BOOT_MSGS = [
+  'YOU ARE COOKED.',
+  'LOADING DESPAIR.',
+  'GOOD LUCK.  LOL.',
+  'PLEASE STUDY BRO.',
+  'SKILL ISSUE DETECTED.',
+  'PRAYING FOR YOU.',
+];
 
-function runIntro(){
+function runIntro() {
+  buildTears();
+
+  const titleEl = document.getElementById('ititle');
+  const bootEl  = document.getElementById('iboot');
+
+  // Start scrambled
+  titleEl.textContent = Array.from({length: 7}, () => SC[Math.floor(Math.random()*SC.length)]).join('');
+
+  // Scramble title into S.A.M.S after beam hits
+  setTimeout(() => scramble(titleEl, 'S.A.M.S', 550), 700);
+
+  // Boot lines appear
+  let delay = 940;
+  BOOT_LINES.forEach(line => {
+    setTimeout(() => {
+      const d = document.createElement('div');
+      d.className = `bline ${line.c}`;
+      d.textContent = '> ' + line.t;
+      bootEl.appendChild(d);
+      requestAnimationFrame(() => { d.style.opacity = '1'; });
+    }, delay);
+    delay += 160;
+  });
+
+  // First tear flash during RGB split
+  setTimeout(() => flashTears(10), 1100);
+
+  // Second brief tear burst
+  setTimeout(() => flashTears(5), 1500);
+
+  // ── INTRO EXIT: venetian strips slide away ──
+  setTimeout(() => exitIntro(), 1900);
+}
+
+function exitIntro() {
   const intro = document.getElementById('intro');
-  const msg   = document.getElementById('imsg');
-  const ibarEls = [...document.querySelectorAll('.ibar')];
-  const N = ibarEls.length;
-  const pick = MSGS[Math.floor(Math.random()*MSGS.length)];
+  const N = 10;
+  const strips = [];
 
-  // Phase timeline (ms):
-  // 0        — bars snap IN instantly (no transition, pure cut)
-  // 50       — show msg
-  // 250      — glitch flicker (bars random scaleX shuffle)
-  // 600      — bars snap OUT
-  // 750      — msg fade
-  // 900      — intro hidden, main shown
+  for (let i = 0; i < N; i++) {
+    const s = document.createElement('div');
+    s.style.cssText = `
+      position:absolute;left:0;right:0;
+      height:${100/N}%;
+      top:${(i * 100/N)}%;
+      background:var(--bg);
+      transform:scaleX(0);
+      transform-origin:${i%2 ? 'right' : 'left'};
+    `;
+    intro.appendChild(s);
+    strips.push(s);
+  }
 
-  // SNAP IN
-  ibarEls.forEach((b,i)=>{
-    b.style.cssText=`transform:scaleX(1);transition:none;transform-origin:${i%2?'right':'left'};`;
+  // Stagger strips inward (covering the intro content)
+  strips.forEach((s, i) => {
+    setTimeout(() => {
+      s.style.transition = 'transform 140ms steps(4)';
+      s.style.transform = 'scaleX(1)';
+    }, i * 18);
   });
 
-  setTimeout(()=>{ msg.textContent=pick; msg.style.cssText='opacity:1;transition:none;'; },50);
+  const peak = N * 18 + 140;
 
-  // FLICKER — rapidly shift bar widths
-  let ft=0;
-  const flickerTimes=[180,220,280,330,380,420,460];
-  flickerTimes.forEach(t=>{
-    setTimeout(()=>{
-      ibarEls.forEach(b=>{
-        const w=(Math.random()>.3)?1:0;
-        b.style.transform=`scaleX(${w})`;
-        b.style.transition='transform 30ms steps(1)';
-      });
-    },t);
-  });
-
-  // SNAP OUT
-  setTimeout(()=>{
-    ibarEls.forEach(b=>{
-      b.style.transform='scaleX(0)';
-      b.style.transition='none';
+  // Then wipe away → reveal main
+  setTimeout(() => {
+    strips.forEach((s, i) => {
+      const orig = i % 2 ? 'left' : 'right';
+      setTimeout(() => {
+        s.style.transformOrigin = orig;
+        s.style.transition = 'transform 100ms steps(3)';
+        s.style.transform = 'scaleX(0)';
+      }, i * 12);
     });
-    msg.style.cssText='opacity:0;transition:none;';
-  },520);
 
-  // REVEAL
-  setTimeout(()=>{
-    intro.classList.add('done');
-    document.getElementById('main').classList.add('on');
-    fetchLoc(); startUptime(); setTime();
-  },700);
+    // Show main while strips are still wiping out
+    setTimeout(() => {
+      intro.classList.add('gone');
+      document.getElementById('main').classList.add('on');
+      fetchLoc();
+      startUptime();
+      setTime();
+      checkExamTime();
+    }, N * 12 + 100);
+
+  }, peak + 60);
 }
 
-window.addEventListener('load', ()=>setTimeout(runIntro,80));
+window.addEventListener('load', () => setTimeout(runIntro, 80));
 
-/* ═══════════════════════════════════
-   PAGE TRANSITION (on btn click)
-═══════════════════════════════════ */
-const pt    = document.getElementById('ptrans');
-const ptEls = [...pt.querySelectorAll('.pt')];
+/* ══════════════════════════════════════════
+   PAGE TRANSITION
+══════════════════════════════════════════ */
+const ptEl = document.getElementById('ptrans');
+const N_STRIPS = 12;
+const PT_COLORS = ['var(--y)','var(--pk)','#000','var(--cy)','#000','var(--y)','var(--pk)','#000','var(--cy)','var(--y)','#000','var(--pk)'];
 
-function doTransition(url){
-  pt.classList.add('active');
-  const N=ptEls.length, inD=90, outD=80, stagger=18;
-
-  ptEls.forEach((el,i)=>{
-    const orig=i%2?'right':'left';
-    el.style.cssText=`transform:scaleX(0);transform-origin:${orig};transition:none;`;
-  });
-
-  // all bars in simultaneously (staggered by 18ms each)
-  ptEls.forEach((el,i)=>{
-    setTimeout(()=>{
-      el.style.transition=`transform ${inD}ms steps(3)`;
-      el.style.transform='scaleX(1)';
-    },i*stagger);
-  });
-
-  const peak=(N-1)*stagger+inD;
-
-  // navigate at peak
-  setTimeout(()=>{ window.location.href=url; }, peak+20);
-
-  // bars out
-  setTimeout(()=>{
-    ptEls.forEach((el,i)=>{
-      const orig=i%2?'left':'right';
-      el.style.transformOrigin=orig;
-      el.style.transition=`transform ${outD}ms steps(3)`;
-      el.style.transform='scaleX(0)';
-    });
-    setTimeout(()=>{
-      pt.classList.remove('active');
-      ptEls.forEach(el=>{el.style.cssText='';});
-    },outD+50);
-  }, peak+60);
+// Pre-build strips
+for (let i = 0; i < N_STRIPS; i++) {
+  const s = document.createElement('div');
+  s.className = 'ps';
+  s.style.background = PT_COLORS[i];
+  ptEl.appendChild(s);
 }
 
-document.addEventListener('click',e=>{
-  const a=e.target.closest('a.btn');
-  if(!a)return;
-  const href=a.getAttribute('href');
-  if(!href||href==='#')return;
-  if(a.classList.contains('btn-off')||a.classList.contains('btn-dead'))return;
+function doTransition(url) {
+  ptEl.classList.add('active');
+  const strips = [...ptEl.querySelectorAll('.ps')];
+
+  strips.forEach((s, i) => {
+    s.style.cssText = `
+      flex:1;
+      background:${PT_COLORS[i]};
+      transform:scaleX(0);
+      transform-origin:${i % 2 ? 'right' : 'left'};
+      transition:none;
+    `;
+  });
+
+  // Snap in (staggered)
+  strips.forEach((s, i) => {
+    setTimeout(() => {
+      s.style.transition = 'transform 100ms steps(3)';
+      s.style.transform = 'scaleX(1)';
+    }, i * 14);
+  });
+
+  const peak = (N_STRIPS - 1) * 14 + 100;
+
+  // Navigate at peak coverage
+  setTimeout(() => { window.location.href = url; }, peak + 25);
+
+  // Fallback wipe-out (if same-page navigation)
+  setTimeout(() => {
+    strips.forEach((s, i) => {
+      const orig = i % 2 ? 'left' : 'right';
+      setTimeout(() => {
+        s.style.transformOrigin = orig;
+        s.style.transition = 'transform 90ms steps(3)';
+        s.style.transform = 'scaleX(0)';
+      }, i * 10);
+    });
+    setTimeout(() => {
+      ptEl.classList.remove('active');
+    }, N_STRIPS * 10 + 100);
+  }, peak + 120);
+}
+
+document.addEventListener('click', e => {
+  const a = e.target.closest('a.btn');
+  if (!a) return;
+  if (a.classList.contains('btn-off') || a.classList.contains('btn-dead')) return;
+  const href = a.getAttribute('href');
+  if (!href || href === '#') return;
   e.preventDefault();
   doTransition(href);
-},{passive:false});
+}, { passive: false });
 
-/* ═══════════════════════════════════
-   LOCATION — ONLY CAIRO / ALEX / GIZA
-═══════════════════════════════════ */
-async function fetchLoc(){
-  const el=document.getElementById('loctext');
-  try{
-    const d=await(await fetch('https://ipapi.co/json/')).json();
-    const city=(d.city||'').toLowerCase();
-    let msg;
-    if(city.includes('cairo'))
-      msg='CAIRO DETECTED. YES, YOU ARE GAY. STUDY ANYWAY.';
-    else if(city.includes('alex')||city.includes('alexandr'))
-      msg='ALEXANDRIA CONNECTED. CONFIRMED GAY. THE SEA AGREES.';
-    else if(city.includes('giza'))
-      msg='GIZA UNIT ONLINE. YOUR ANCESTORS BUILT WONDERS. GOOD LUCK WITH THIS.';
-    else if((d.country_code||'').toUpperCase()==='EG')
-      msg=`${(d.city||'?').toUpperCase()} TERMINAL. EGYPTIAN. SUFFERING. SAME AS ALWAYS.`;
-    else
-      msg=`${(d.city||'?').toUpperCase()}, ${d.country_name||'?'}. YOU CAME FROM FAR TO FAIL.`;
-    el.textContent=msg;
-  }catch{
-    el.textContent='LOCATION UNKNOWN. LIKE YOUR FUTURE.';
+/* ══════════════════════════════════════════
+   EXAM ALERT — 1:00 PM to 2:00 PM
+══════════════════════════════════════════ */
+function checkExamTime() {
+  const now = new Date();
+  const h = now.getHours(), m = now.getMinutes();
+  const mins = h * 60 + m;
+  const alreadyDismissed = sessionStorage.getItem('exam_dismissed');
+
+  if (!alreadyDismissed && mins >= 13 * 60 && mins < 14 * 60) {
+    const hh = String(h).padStart(2, '0');
+    const mm = String(m).padStart(2, '0');
+    document.getElementById('ea-t').textContent = `${hh}:${mm}`;
+    document.getElementById('exam').classList.add('on');
   }
 }
 
-/* ═══════════════════════════════════
-   TERM TOGGLE
-═══════════════════════════════════ */
-function T(id){document.getElementById(id).classList.toggle('col');}
-
-/* ═══════════════════════════════════
-   CLOCK & UPTIME
-═══════════════════════════════════ */
-const t0=Date.now();
-function startUptime(){
-  setInterval(()=>{
-    const s=Math.floor((Date.now()-t0)/1000);
-    const h=String(Math.floor(s/3600)).padStart(2,'0');
-    const m=String(Math.floor(s%3600/60)).padStart(2,'0');
-    const sc=String(s%60).padStart(2,'0');
-    document.getElementById('upt').textContent=`UPTIME: ${h}:${m}:${sc}`;
-  },1000);
+function closeAlert() {
+  sessionStorage.setItem('exam_dismissed', '1');
+  document.getElementById('exam').classList.remove('on');
 }
-function setTime(){
-  const el=document.getElementById('clk');
-  const tick=()=>{
-    const n=new Date();
-    let h=n.getHours(),ap=h>=12?'PM':'AM';
-    h=h%12||12;
-    el.textContent=`${h}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')} ${ap}`;
+
+/* ══════════════════════════════════════════
+   LOCATION
+══════════════════════════════════════════ */
+async function fetchLoc() {
+  const el = document.getElementById('loctext');
+  try {
+    const d = await (await fetch('https://ipapi.co/json/')).json();
+    const city = (d.city || '').toLowerCase();
+    let msg;
+    if      (city.includes('cairo'))                         msg = 'CAIRO DETECTED. YES, YOU ARE GAY. STUDY ANYWAY.';
+    else if (city.includes('alex') || city.includes('alexandr')) msg = 'ALEXANDRIA CONNECTED. CONFIRMED GAY. THE SEA AGREES.';
+    else if (city.includes('giza'))                          msg = 'GIZA UNIT ONLINE. YOUR ANCESTORS BUILT WONDERS. GOOD LUCK WITH THIS.';
+    else if ((d.country_code || '').toUpperCase() === 'EG') msg = `${(d.city||'?').toUpperCase()} TERMINAL. EGYPTIAN. SUFFERING AS ALWAYS.`;
+    else                                                     msg = `${(d.city||'?').toUpperCase()}, ${d.country_name||'?'}. YOU CAME FROM FAR TO FAIL.`;
+    el.textContent = msg;
+  } catch {
+    el.textContent = 'LOCATION UNKNOWN. LIKE YOUR FUTURE.';
+  }
+}
+
+/* ══════════════════════════════════════════
+   TERM TOGGLE
+══════════════════════════════════════════ */
+function T(id) { document.getElementById(id).classList.toggle('col'); }
+
+/* ══════════════════════════════════════════
+   CLOCK & UPTIME
+══════════════════════════════════════════ */
+const t0 = Date.now();
+
+function startUptime() {
+  setInterval(() => {
+    const s = Math.floor((Date.now() - t0) / 1000);
+    const h  = String(Math.floor(s / 3600)).padStart(2, '0');
+    const m  = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+    const sc = String(s % 60).padStart(2, '0');
+    document.getElementById('upt').textContent = `UPTIME: ${h}:${m}:${sc}`;
+  }, 1000);
+}
+
+function setTime() {
+  const el = document.getElementById('clk');
+  const tick = () => {
+    const n = new Date();
+    let h = n.getHours(), ap = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    el.textContent = `${h}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')} ${ap}`;
   };
-  tick();setInterval(tick,1000);
+  tick(); setInterval(tick, 1000);
 }
 </script>
 </body>

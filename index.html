@@ -3,152 +3,291 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>S.A.M.S</title>
+<title>S.A.M.S v2.7</title>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'VT323',monospace;background:#000;color:#0f0;font-size:20px;padding:20px;line-height:1.4;}
-a{color:#0f0;text-decoration:none;}
-a:hover{color:#fff;background:#0f0;}
-h1{font-size:48px;text-align:center;margin:20px 0;letter-spacing:8px;}
-h2{font-size:32px;margin:30px 0 15px 0;letter-spacing:4px;}
-hr{border:1px solid #0f0;margin:20px 0;}
-table{width:100%;border-collapse:collapse;border:2px solid #0f0;margin:20px 0;}
-td,th{border:1px solid #0f0;padding:15px;text-align:left;}
-th{background:#0f0;color:#000;font-weight:bold;font-size:24px;}
-td{font-size:20px;}
-.btn{display:inline-block;padding:10px 20px;border:2px solid #0f0;margin:5px;background:#000;color:#0f0;cursor:pointer;font-family:'VT323',monospace;font-size:18px;}
-.btn:hover{background:#0f0;color:#000;}
-.section{margin:40px 0;}
-.center{text-align:center;}
-@media(max-width:768px){body{font-size:16px;padding:10px;}h1{font-size:32px;}h2{font-size:24px;}th{font-size:18px;}td{font-size:16px;padding:10px;}.btn{font-size:16px;padding:8px 16px;}}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --g:#00ff41;--g2:#00c935;--g3:#009926;
+  --dim:#004d14;--vdim:#001f08;--bg:#000;
+  --dead:#8b0000;--dead-dim:#5a0000;
+  --scan:rgba(0,255,65,0.025);
+}
+html{scroll-behavior:smooth;}
+body{font-family:'VT323',monospace;background:var(--bg);color:var(--g);font-size:20px;line-height:1.5;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,var(--scan) 2px,var(--scan) 4px);pointer-events:none;z-index:9997;}
+body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at center,transparent 60%,rgba(0,0,0,.7) 100%);pointer-events:none;z-index:9996;}
+@keyframes flicker{0%,89%,91%,93%,100%{opacity:1}90%{opacity:.96}92%{opacity:.98}}
+body{animation:flicker 7s infinite;}
+@keyframes glitch{0%,88%,100%{transform:none;text-shadow:0 0 8px var(--g)}89%{transform:skewX(-3deg) translateX(-2px);text-shadow:-4px 0 #f00,3px 0 #0ff}90%{transform:skewX(2deg) translateX(2px);text-shadow:3px 0 #f00,-4px 0 #0ff}91%{transform:none;text-shadow:0 0 8px var(--g)}95%{transform:skewX(-1deg);text-shadow:2px 0 #0ff}96%{transform:none}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.blink{animation:blink 1.1s step-end infinite;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* GLITCH OVERLAY */
+#go{position:fixed;inset:0;z-index:99999;pointer-events:none;display:flex;flex-direction:column;overflow:hidden;}
+#go.active{pointer-events:all;}
+.gs{flex:1;transform:scaleX(0);}
+
+/* BOOT */
+#boot{position:fixed;inset:0;background:#000;z-index:9998;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 20px;transition:opacity .3s;}
+#boot.out{opacity:0;pointer-events:none;}
+#boot.hidden{display:none;}
+#boot-text{white-space:pre-wrap;max-width:620px;width:100%;font-size:clamp(14px,3vw,20px);color:var(--g);line-height:1.6;}
+#boot-bar{max-width:620px;width:100%;margin-top:12px;font-size:clamp(12px,2.5vw,16px);color:var(--dim);text-align:center;}
+
+/* MAIN */
+#main{display:none;max-width:1080px;margin:0 auto;padding:24px 20px 40px;}
+#main.visible{display:block;}
+
+.hdr{text-align:center;padding:20px 0 12px;border-bottom:2px solid var(--dim);}
+.hdr h1{font-size:clamp(44px,9vw,80px);letter-spacing:12px;animation:glitch 6s infinite;color:var(--g);line-height:1;}
+.hdr .sub{font-size:clamp(13px,2.5vw,18px);color:var(--dim);letter-spacing:5px;margin-top:6px;}
+.hdr .ver{font-size:clamp(11px,2vw,13px);color:#002a0b;letter-spacing:2px;margin-top:3px;}
+
+#loc{border:1px solid var(--dim);margin:14px 0;padding:8px 14px;font-size:clamp(13px,2.5vw,17px);color:var(--g3);min-height:38px;display:flex;align-items:center;}
+#loc::before{content:'> ';color:var(--dim);}
+
+.div{border:none;border-top:1px solid var(--dim);margin:18px 0;}
+.div-bright{border-top-color:var(--g);}
+
+.term{margin:24px 0;animation:fadeUp .4s ease both;}
+.term:nth-child(2){animation-delay:.08s;}
+.term:nth-child(3){animation-delay:.16s;}
+.term-hdr{display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 0;border-bottom:2px solid var(--g);user-select:none;-webkit-tap-highlight-color:transparent;}
+.term-hdr:hover .th-label{color:#fff;}
+.th-label{font-size:clamp(18px,4vw,30px);letter-spacing:3px;flex:1;transition:color .15s;}
+.th-badge{font-size:clamp(11px,2vw,14px);color:var(--dim);letter-spacing:1px;white-space:nowrap;}
+.th-arrow{font-size:24px;color:var(--g3);transition:transform .35s cubic-bezier(.4,0,.2,1);flex-shrink:0;}
+.term.collapsed .th-arrow{transform:rotate(-90deg);}
+.term-body{overflow:hidden;max-height:4000px;transition:max-height .55s cubic-bezier(.4,0,.2,1),opacity .35s ease;opacity:1;}
+.term.collapsed .term-body{max-height:0;opacity:0;}
+
+.sub-hdr{font-size:clamp(13px,2.5vw,17px);color:var(--dim);letter-spacing:3px;margin:18px 0 8px;padding-left:10px;border-left:2px solid var(--dim);}
+.sub-hdr.dead{color:var(--dead-dim);border-color:var(--dead-dim);}
+
+table{width:100%;border-collapse:collapse;border:1px solid var(--dim);margin-bottom:6px;}
+thead{border-bottom:2px solid var(--g);}
+th{background:var(--vdim);color:var(--g3);font-size:clamp(12px,2vw,16px);padding:8px 10px;text-align:left;letter-spacing:2px;font-weight:normal;white-space:nowrap;}
+td{font-size:clamp(12px,2.2vw,16px);padding:8px 10px;border-bottom:1px solid var(--vdim);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tbody tr{transition:background .1s;}
+tbody tr:hover td{background:rgba(0,255,65,0.04);}
+.td-code{color:var(--dim);font-size:clamp(11px,1.8vw,13px);white-space:nowrap;}
+.td-name{font-size:clamp(13px,2.2vw,16px);}
+
+.btns{display:flex;flex-wrap:wrap;gap:4px;}
+.btn{display:inline-block;padding:3px 12px;border:1px solid var(--g);background:#000;color:var(--g);cursor:pointer;font-family:'VT323',monospace;font-size:clamp(12px,2vw,15px);text-decoration:none;letter-spacing:1px;white-space:nowrap;transition:background .08s,color .08s;-webkit-tap-highlight-color:transparent;}
+.btn:hover{background:var(--g);color:#000;}
+.btn-rev{border-color:var(--g3);color:var(--g3);}
+.btn-rev:hover{background:var(--g3);color:#000;}
+.btn-off{border-color:#002a0b;color:#002a0b;cursor:default;pointer-events:none;}
+.btn-dead{border-color:var(--dead);color:var(--dead);cursor:default;pointer-events:none;font-size:clamp(10px,1.8vw,14px);}
+
+.statusbar{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;padding:10px 0;color:var(--dim);font-size:clamp(11px,2vw,15px);border-top:1px solid var(--dim);margin-top:20px;letter-spacing:1px;}
+
+@media(max-width:540px){th:first-child,td:first-child{display:none;}.hdr h1{letter-spacing:6px;}.th-label{font-size:17px;}}
 </style>
 </head>
 <body>
-<h1>S.A.M.S v2.7</h1>
-<div class="center">
-<p>STUDENT ACCESS & MANAGEMENT SYSTEM</p>
-<p>SYSTEM STATUS: OPERATIONAL</p>
+
+<div id="go">
+  <div class="gs" style="background:#00ff41"></div>
+  <div class="gs" style="background:#000"></div>
+  <div class="gs" style="background:#00ff41"></div>
+  <div class="gs" style="background:#000"></div>
+  <div class="gs" style="background:#00ff41"></div>
+  <div class="gs" style="background:#000"></div>
+  <div class="gs" style="background:#00ff41"></div>
+  <div class="gs" style="background:#000"></div>
 </div>
-<hr>
-<div class="section">
-<h2>&gt; MIDTERM EXAMS</h2>
-<table>
-<tr>
-<th>COURSE CODE</th>
-<th>COURSE NAME</th>
-<th>AVAILABLE TESTS</th>
-</tr>
-<tr>
-<td>CW_2025_MID</td>
-<td>CYBER WARFARE</td>
-<td>
-<a href="Courses/CW/match" class="btn">MATCH</a>
-<a href="Courses/CW/mcq" class="btn">MCQ</a>
-</td>
-</tr>
-<tr>
-<td>SP_2025_MID</td>
-<td>SECURITY POLICIES</td>
-<td>
-<a href="Courses/SP/match" class="btn">MATCH</a>
-<a href="Courses/SP/mcq" class="btn">MCQ</a>
-</td>
-</tr>
-<tr>
-<td>CT_2025_MID</td>
-<td>ANALYTIC THINKING</td>
-<td>
-<span style="opacity:0.5">T/F - NOT AVAILABLE</span>
-</td>
-</tr>
-<tr>
-<td>SAS_2025_MID</td>
-<td>SOFTWARE SECURITY</td>
-<td>
-<a href="Courses/SA/mcq" class="btn">MCQ</a>
-</td>
-</tr>
-<tr>
-<td>VIC_2025_MID</td>
-<td>VISION COMPUTING</td>
-<td>
-<a href="Courses/AI/match" class="btn">MATCH</a>
-<a href="Courses/AI/mcq" class="btn">MCQ</a>
-</td>
-</tr>
-<tr>
-<td>IOT_2025_MID</td>
-<td>IOT TECHNOLOGIES</td>
-<td>
-<a href="Courses/IOT/match" class="btn">MATCH</a>
-<a href="Courses/IOT/mcq" class="btn">MCQ</a>
-</td>
-</tr>
-</table>
+
+<div id="boot">
+  <pre id="boot-text"></pre>
+  <div id="boot-bar">[ CLICK OR PRESS ANY KEY TO SKIP ]</div>
 </div>
-<hr>
-<div class="section">
-<h2>&gt; FINAL EXAMS</h2>
-<table>
-<tr>
-<th>COURSE CODE</th>
-<th>COURSE NAME</th>
-<th>AVAILABLE TESTS</th>
-</tr>
-<tr>
-<td>IOT_2025_FINAL</td>
-<td>IOT TECHNOLOGIES</td>
-<td>
-<a href="Courses/Final/IOT/match" class="btn">MATCH</a>
-<a href="Courses/Final/IOT/mcq" class="btn">MCQ</a>
-</td>
-</tr>
-<tr>
-<td>SP_2025_FINAL</td>
-<td>SECURITY POLICIES</td>
-<td>
-<a href="Courses/Final/SP/match" class="btn">MATCH</a>
-<a href="Courses/Final/SP/mcq" class="btn">MCQ</a>
-</td>
-</tr>
-<tr>
-<td>VIC_2025_FINAL</td>
-<td>VISION COMPUTING</td>
-<td>
-<a href="Courses/Final/AI/match" class="btn">MATCH</a>
-<a href="Courses/Final/AI/mcq" class="btn">MCQ</a>
-</td>
-</tr>
-<tr>
-<td>CT_2025_FINAL</td>
-<td>ANALYTIC THINKING</td>
-<td>
-<a href="Courses/Final/CT" class="btn">Revision</a>
-  <a href="Courses/Final/CT/quiz" class="btn">T & F</a>
-</td>
-</tr>
-<tr>
-<td>SAS_2025_FINAL</td>
-<td>SOFTWARE SECURITY</td>
-<td>
-<a class="btn">There is nothing we can do</a>
-</td>
-</tr>
-<tr>
-<td>CW_2025_FINAL</td>
-<td>CYBER WARFARE</td>
-<td>
-<a href="Courses/Final/CW/match" class="btn">MATCH</a>
-<a href="Courses/Final/CW/mcq" class="btn">MCQ</a>
-</td>
-</tr>
-</table>
+
+<div id="main">
+  <div class="hdr">
+    <h1>S.A.M.S</h1>
+    <div class="sub">STUDENT ACCESS &amp; MANAGEMENT SYSTEM</div>
+    <div class="ver">v2.7 // CAN'T FIX YOUR GPA. CAN ONLY WATCH.</div>
+  </div>
+  <div id="loc">LOCATING TERMINAL<span class="blink">█</span></div>
+  <hr class="div div-bright">
+
+  <!-- TERM 1 -->
+  <div class="term" id="t1">
+    <div class="term-hdr" onclick="toggleTerm('t1')">
+      <span class="th-label">&gt; TERM 1</span>
+      <span class="th-badge">6 COURSES</span>
+      <span class="th-arrow">▼</span>
+    </div>
+    <div class="term-body">
+      <div class="sub-hdr">// MIDTERM</div>
+      <table>
+        <thead><tr><th>CODE</th><th>COURSE</th><th>ACCESS</th></tr></thead>
+        <tbody>
+          <tr><td class="td-code">CW_MID</td><td class="td-name">CYBER WARFARE</td><td><div class="btns"><a href="Courses/CW/revision" class="btn btn-rev">REVISION</a><a href="Courses/CW/match" class="btn">MATCH</a><a href="Courses/CW/mcq" class="btn">MCQ</a></div></td></tr>
+          <tr><td class="td-code">SP_MID</td><td class="td-name">SECURITY POLICIES</td><td><div class="btns"><a href="Courses/SP/revision" class="btn btn-rev">REVISION</a><a href="Courses/SP/match" class="btn">MATCH</a><a href="Courses/SP/mcq" class="btn">MCQ</a></div></td></tr>
+          <tr><td class="td-code">CT_MID</td><td class="td-name">ANALYTIC THINKING</td><td><div class="btns"><a href="Courses/CT/revision" class="btn btn-rev">REVISION</a><span class="btn btn-off">OFFLINE</span></div></td></tr>
+          <tr><td class="td-code">SAS_MID</td><td class="td-name">SOFTWARE SECURITY</td><td><div class="btns"><a href="Courses/SA/revision" class="btn btn-rev">REVISION</a><a href="Courses/SA/mcq" class="btn">MCQ</a></div></td></tr>
+          <tr><td class="td-code">VIC_MID</td><td class="td-name">VISION COMPUTING</td><td><div class="btns"><a href="Courses/AI/revision" class="btn btn-rev">REVISION</a><a href="Courses/AI/match" class="btn">MATCH</a><a href="Courses/AI/mcq" class="btn">MCQ</a></div></td></tr>
+          <tr><td class="td-code">IOT_MID</td><td class="td-name">IOT TECHNOLOGIES</td><td><div class="btns"><a href="Courses/IOT/revision" class="btn btn-rev">REVISION</a><a href="Courses/IOT/match" class="btn">MATCH</a><a href="Courses/IOT/mcq" class="btn">MCQ</a></div></td></tr>
+        </tbody>
+      </table>
+      <div class="sub-hdr">// FINAL</div>
+      <table>
+        <thead><tr><th>CODE</th><th>COURSE</th><th>ACCESS</th></tr></thead>
+        <tbody>
+          <tr><td class="td-code">IOT_FIN</td><td class="td-name">IOT TECHNOLOGIES</td><td><div class="btns"><a href="Courses/Final/IOT/revision" class="btn btn-rev">REVISION</a><a href="Courses/Final/IOT/match" class="btn">MATCH</a><a href="Courses/Final/IOT/mcq" class="btn">MCQ</a></div></td></tr>
+          <tr><td class="td-code">SP_FIN</td><td class="td-name">SECURITY POLICIES</td><td><div class="btns"><a href="Courses/Final/SP/revision" class="btn btn-rev">REVISION</a><a href="Courses/Final/SP/match" class="btn">MATCH</a><a href="Courses/Final/SP/mcq" class="btn">MCQ</a></div></td></tr>
+          <tr><td class="td-code">VIC_FIN</td><td class="td-name">VISION COMPUTING</td><td><div class="btns"><a href="Courses/Final/AI/revision" class="btn btn-rev">REVISION</a><a href="Courses/Final/AI/match" class="btn">MATCH</a><a href="Courses/Final/AI/mcq" class="btn">MCQ</a></div></td></tr>
+          <tr><td class="td-code">CT_FIN</td><td class="td-name">ANALYTIC THINKING</td><td><div class="btns"><a href="Courses/Final/CT" class="btn btn-rev">REVISION</a><a href="Courses/Final/CT/quiz" class="btn">T &amp; F</a></div></td></tr>
+          <tr><td class="td-code">SAS_FIN</td><td class="td-name">SOFTWARE SECURITY</td><td><div class="btns"><span class="btn btn-dead">THERE IS NOTHING WE CAN DO.</span></div></td></tr>
+          <tr><td class="td-code">CW_FIN</td><td class="td-name">CYBER WARFARE</td><td><div class="btns"><a href="Courses/Final/CW/revision" class="btn btn-rev">REVISION</a><a href="Courses/Final/CW/match" class="btn">MATCH</a><a href="Courses/Final/CW/mcq" class="btn">MCQ</a></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <hr class="div">
+
+  <!-- TERM 2 -->
+  <div class="term" id="t2">
+    <div class="term-hdr" onclick="toggleTerm('t2')">
+      <span class="th-label">&gt; TERM 2</span>
+      <span class="th-badge">6 COURSES</span>
+      <span class="th-arrow">▼</span>
+    </div>
+    <div class="term-body">
+      <div class="sub-hdr">// MIDTERM</div>
+      <table>
+        <thead><tr><th>CODE</th><th>COURSE</th><th>ACCESS</th></tr></thead>
+        <tbody>
+          <tr><td class="td-code">DM_MID</td><td class="td-name">FUNDAMENTALS OF DATA MINING</td><td><div class="btns"><a href="Courses/Mid_Data.html" class="btn btn-rev">REVISION</a><a href="Courses/Mid/Fun/match" class="btn">MATCH</a><a href="Courses/Mid/Fun/mcq" class="btn">MCQ</a></div></td></tr>
+          <tr><td class="td-code">DRR_MID</td><td class="td-name">DISASTER RECOVERY &amp; RISK MGMT</td><td><div class="btns"><a href="Courses/Mid2/DRR/revision" class="btn btn-rev">REVISION</a><span class="btn btn-off">MCQ — PENDING</span></div></td></tr>
+          <tr><td class="td-code">HR_MID</td><td class="td-name">HUMAN RIGHTS</td><td><div class="btns"><a href="Courses/Mid2/HR/revision" class="btn btn-rev">REVISION</a><span class="btn btn-off">MCQ — PENDING</span></div></td></tr>
+          <tr><td class="td-code">CCS_MID</td><td class="td-name">CLOUD COMPUTING SECURITY</td><td><div class="btns"><a href="Courses/Mid2/CCS/revision" class="btn btn-rev">REVISION</a><span class="btn btn-off">MCQ — PENDING</span></div></td></tr>
+          <tr><td class="td-code">PEF_MID</td><td class="td-name">ECONOMICS &amp; FEASIBILITY</td><td><div class="btns"><a href="Courses/Mid2/PEF/revision" class="btn btn-rev">REVISION</a><span class="btn btn-off">MCQ — PENDING</span></div></td></tr>
+          <tr><td class="td-code">DIG_MID</td><td class="td-name">DIGITAL MARKETING</td><td><div class="btns"><a href="Courses/Mid2/DIG/revision" class="btn btn-rev">REVISION</a><span class="btn btn-off">MCQ — PENDING</span></div></td></tr>
+        </tbody>
+      </table>
+      <div class="sub-hdr dead">// FINAL — NOT YET. ENJOY THE SUFFERING WHILE IT LASTS.</div>
+    </div>
+  </div>
+
+  <div class="statusbar">
+    <span>SYS: ONLINE</span>
+    <span id="uptime">UPTIME: 00:00:00</span>
+    <span id="stime"></span>
+    <span>&gt; END OF TRANSMISSION &lt;</span>
+  </div>
 </div>
-<hr>
-<div class="center">
-<p>&gt; END OF TRANSMISSION &lt;</p>
-<p>SYSTEM UPTIME: UNKNOWN</p>
-</div>
+
+<script>
+// BOOT
+const LINES=["ROBCO INDUSTRIES (TM) TERMLINK PROTOCOL","COPYRIGHT 2075-2077 ROBCO INDUSTRIES","","> INITIALIZING S.A.M.S v2.7...","> MEMORY INTEGRITY................. OK","> STUDENT DATABASE................. OK","> EXAM MODULES..................... OK","> HOPE AND MOTIVATION..............","","  [||||||||||||||||||||||||] 100%","","  ACCESS GRANTED.","","> WELCOME BACK, STUDENT.","> CAN'T FIX YOUR GPA. CAN ONLY WATCH.","> GOOD LUCK. YOU WILL NEED IT.",""];
+let li=0,ci=0,done=false;
+const bootEl=document.getElementById('boot-text');
+function typeBoot(){
+  if(li>=LINES.length){if(!done){done=true;setTimeout(endBoot,300);}return;}
+  const line=LINES[li];
+  if(ci<=line.length){
+    bootEl.textContent=LINES.slice(0,li).join('\n')+'\n'+line.slice(0,ci);
+    ci++;
+    setTimeout(typeBoot,line===''?1:line.startsWith('  [')?(ci<line.length?28:60):14);
+  } else {li++;ci=0;setTimeout(typeBoot,line===''?20:45);}
+}
+function endBoot(){
+  const b=document.getElementById('boot');
+  b.classList.add('out');
+  setTimeout(()=>{b.classList.add('hidden');document.getElementById('main').classList.add('visible');fetchLoc();startUptime();setTime();},320);
+}
+function skipBoot(){if(done)return;done=true;endBoot();}
+document.getElementById('boot').addEventListener('click',skipBoot);
+document.addEventListener('keydown',skipBoot,{once:true});
+setTimeout(typeBoot,200);
+
+// GLITCH TRANSITION
+const overlay=document.getElementById('go');
+const slices=[...overlay.querySelectorAll('.gs')];
+function doGlitch(url){
+  overlay.classList.add('active');
+  const stagger=22,inDur=180,outDur=140;
+  slices.forEach((s,i)=>{
+    const delay=i*stagger;
+    const orig=i%2===0?'left':'right';
+    s.style.cssText=`transform:scaleX(0);transform-origin:${orig};transition:transform ${inDur}ms cubic-bezier(0.4,0,0.2,1);`;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      setTimeout(()=>{
+        s.style.transform='scaleX(1)';
+        setTimeout(()=>{
+          s.style.transformOrigin=orig==='left'?'right':'left';
+          s.style.transition=`transform ${outDur}ms cubic-bezier(0.4,0,0.2,1)`;
+          s.style.transform='scaleX(0)';
+        },inDur+30);
+      },delay);
+    }));
+  });
+  const peak=inDur+30+(slices.length-1)*stagger/2;
+  setTimeout(()=>{window.location.href=url;},peak);
+  setTimeout(()=>{overlay.classList.remove('active');slices.forEach(s=>{s.style.cssText='';});},peak+outDur+200);
+}
+document.addEventListener('click',e=>{
+  const a=e.target.closest('a.btn');
+  if(!a)return;
+  const href=a.getAttribute('href');
+  if(!href||href==='#')return;
+  if(a.classList.contains('btn-off')||a.classList.contains('btn-dead'))return;
+  e.preventDefault();
+  doGlitch(href);
+},{passive:false});
+
+// LOCATION
+const ROASTS={
+  cairo:"CAIRO TERMINAL ONLINE. YOU ARE GAY.",
+  giza:"GIZA UNIT DETECTED. YOUR ANCESTORS BUILT WONDERS. YOU NEED A REVISION SHEET.",
+  alexandr:"ALEXANDRIA CONNECTED. YOU ARE GAY.",
+  alex:"ALEXANDRIA ONLINE. YOU ARE GAY.",
+};
+async function fetchLoc(){
+  const el=document.getElementById('loc');
+  try{
+    const d=await(await fetch('https://ipapi.co/json/')).json();
+    const city=(d.city||'').toLowerCase();
+    let msg=null;
+    for(const[k,v] of Object.entries(ROASTS)){if(city.includes(k)){msg=v;break;}}
+    if(!msg){
+      if((d.country_code||'').toUpperCase()==='EG')msg=`${(d.city||'UNKNOWN').toUpperCase()} TERMINAL ONLINE. ANOTHER EGYPTIAN SUFFERING IN SILENCE.`;
+      else msg=`FOREIGN TERMINAL: ${(d.city||'?').toUpperCase()}, ${d.country_name||'?'}. YOU TRAVELED FAR TO FAIL DIFFERENTLY.`;
+    }
+    el.innerHTML=msg;
+  }catch{el.innerHTML='LOCATION CLASSIFIED. LIKELY FOR YOUR OWN PROTECTION.';}
+}
+
+function toggleTerm(id){document.getElementById(id).classList.toggle('collapsed');}
+
+const t0=Date.now();
+function startUptime(){
+  setInterval(()=>{
+    const s=Math.floor((Date.now()-t0)/1000);
+    const h=String(Math.floor(s/3600)).padStart(2,'0');
+    const m=String(Math.floor(s%3600/60)).padStart(2,'0');
+    const sc=String(s%60).padStart(2,'0');
+    document.getElementById('uptime').textContent=`UPTIME: ${h}:${m}:${sc}`;
+  },1000);
+}
+function setTime(){
+  const el=document.getElementById('stime');
+  const tick=()=>{
+    const n=new Date();
+    let h=n.getHours(),ampm=h>=12?'PM':'AM';
+    h=h%12||12;
+    el.textContent=`LOCAL: ${h}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')} ${ampm}`;
+  };
+  tick();setInterval(tick,1000);
+}
+</script>
 </body>
 </html>
